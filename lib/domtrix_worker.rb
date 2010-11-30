@@ -9,7 +9,6 @@ require 'syslog'
 require 'yaml'
 require 'array_shuffle'
 require 'domtrix_payload'
-require 'domtrix_stats'
 require 'domtrix_config'
 %w(
 worker_manager
