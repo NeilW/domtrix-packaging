@@ -18,7 +18,7 @@ if ARGV.length.zero?
   abort "Usage: #{File.basename $0} queue-name [json-config-file]"
 end
 
-DEFAULT_DATADIR = '/usr/share/domtrix_lb/'
+DEFAULT_DATADIR = '/usr/share/domtrix-lb/'
 HOST = ARGV.shift
 TEMPLATES = File.join(DATADIR || DEFAULT_DATADIR, 'templates')
 

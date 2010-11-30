@@ -13,5 +13,5 @@ end
 rootdir = File.expand_path(File.join(File.dirname(__FILE__)))
 $: << File.join(rootdir,"lib")
 ENV['PATH']+=":#{File.join(rootdir,'bin')}"
-DATADIR = File.join(rootdir, 'data/domtrix_lb')
+DATADIR = File.join(rootdir, 'data/domtrix-lb')
 CONFDIR = File.join(rootdir, 'conf')
