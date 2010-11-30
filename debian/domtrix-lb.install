@@ -1,4 +1,3 @@
-usr/bin/dom-lb-configure usr/sbin
 usr/bin/domtrix-lb-worker 
 usr/lib/ruby/1.8/domtrix_lb*
 usr/share/domtrix-lb/templates
