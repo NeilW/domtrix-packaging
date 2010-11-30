@@ -4,7 +4,7 @@ Maintainer: Neil Wilson <neil@aldur.co.uk>
 Source: https://NeilW@github.com/NeilW/domtrix.git
 
 Copyright: 2010 Brightbox Systems
-License: GNU Affero GPL
+License: AGPLv3
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
