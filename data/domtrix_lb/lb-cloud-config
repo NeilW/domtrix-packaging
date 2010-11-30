@@ -1,0 +1,10 @@
+#cloud-config
+apt_update: true
+apt_upgrade: true
+apt_mirror: http://gb.archive.ubuntu.com/ubuntu/
+apt_sources:
+ - source: "ppa:brightbox/ppa"
+packages:
+ - haproxy
+ - libstomp-ruby1.8
+ - daemontools-run

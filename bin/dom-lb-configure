@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+#    Brightbox - Configure a load balancer image
+#    Copyright (C) 2010 Brightbox Systems
+#    Author: Neil Wilson
+#
+#  dom-lb-configure queue-name json-config
+
+
+begin
+  require "domtrix_queue"
+rescue LoadError
+  require File.join(File.dirname(__FILE__),'..', 'relative-env')
+  retry
+end
+require 'domtrix_lb_config'
+
+if ARGV.length.zero?
+  abort "Usage: #{File.basename $0} queue-name [json-config-file]"
+end
+
+DEFAULT_DATADIR = '/usr/share/domtrix_lb/'
+HOST = ARGV.shift
+TEMPLATES = File.join(DATADIR || DEFAULT_DATADIR, 'templates')
+
+lbconfig = LoadBalancerConfig.new(ARGF.read, TEMPLATES)
+
+queue = DomtrixQueue.new(HOST)
+queue.execute(
+  'configure',
+  lbconfig.haproxy_config,
+  "Configuring load-balancer #{lbconfig.lb_id}"
+  )
+exit

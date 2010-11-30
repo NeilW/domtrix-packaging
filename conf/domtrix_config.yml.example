@@ -1,0 +1,11 @@
+# Example domtrix config file.
+# Copy to 'config.yml' and edit as required.
+
+# Username and password to log onto Active MQ
+mq_login: fred
+mq_password: fredpassword
+mq_hosts: mq1.local,mq2.local
+
+# Username and password to log onto the central FTP library.
+ftp_login: jim
+ftp_password: jimpassword

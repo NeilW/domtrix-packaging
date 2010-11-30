@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+#    Brightbox - Machine Message consumer for load balancers
+#    Copyright (C) 2010, Brightbox Systems
+#    Author: Neil Wilson
+#
+#  Listen on a queue and handle load balancer configure requests
+
+begin
+  require 'domtrix_lb'
+rescue LoadError
+  require File.join(File.dirname(__FILE__),'..', 'relative-env')
+  retry
+end
+require 'domtrix_worker'
+
+# Command redirector table
+app = WorkerManager.new(
+  'configure' => LbConfigureCommand
+)
+app.run
