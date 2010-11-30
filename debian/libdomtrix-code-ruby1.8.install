@@ -1,0 +1,6 @@
+usr/lib/ruby/1.8/array_shuffle.rb
+usr/lib/ruby/1.7/domtrix_core*
+usr/lib/ruby/1.7/domtrix_worker*
+usr/lib/ruby/1.7/domtrix_config*
+usr/lib/ruby/1.7/domtrix_payload*
+usr/lib/ruby/1.7/domtrix_queue*
