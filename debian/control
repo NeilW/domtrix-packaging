@@ -8,7 +8,7 @@ Standards-version: 3.9.1
 
 Package: domtrix-lb
 Architecture: all
-Depends: libdomtrix-core-ruby, libjson-ruby, ${misc:Depends}
+Depends: ruby1.8, libdomtrix-core-ruby, libjson-ruby, ${misc:Depends}
 Suggests: daemontools-run
 Description: domtrix worker package for load balancers
  Domtrix provides a Stomp based message queue consumer system for managing
