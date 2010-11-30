@@ -1,0 +1,4 @@
+usr/bin/dom-lb-configure usr/sbin
+usr/bin/dom-lb-worker usr/bin
+usr/lib/ruby/1.8/domtrix_lb* usr/lib/ruby/1.8
+usr/share/domtrix-lb/templates usr/share/domtrix-lb
