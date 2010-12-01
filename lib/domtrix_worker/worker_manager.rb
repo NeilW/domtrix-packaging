@@ -58,7 +58,7 @@ class WorkerManager
       @client.join(statistics_frequency)
     end
   ensure
-    @client.close
+    @client && @client.close
     Syslog.close
   end
 
