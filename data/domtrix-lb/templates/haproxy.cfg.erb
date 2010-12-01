@@ -34,7 +34,7 @@ defaults
     mode tcp
     option tcplog
   <% end %>
-  <% pool.each do | node | %>
+  <% nodes.each do | node | %>
     server <%= node['node'] %> <%= node['node'] %>:<%= listener['out'] %> check maxconn 200
   <% end %>
 

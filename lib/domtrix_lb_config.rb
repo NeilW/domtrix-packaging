@@ -16,8 +16,8 @@ class LoadBalancerConfig
     @config['listeners'] || []
   end
 
-  def pool
-    @config['pool'] || []
+  def nodes
+    @config['nodes'] || []
   end
 
   def balance_method

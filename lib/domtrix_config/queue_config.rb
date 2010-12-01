@@ -16,7 +16,12 @@ class QueueConfig
   def self.load_config
     @@config = {}
     @@config = YAML.load_file(config_file)
-    "Configuration loaded #{@@config.keys.inspect}"
+    if @@config
+      "Configuration loaded #{@@config.keys.inspect}"
+    else
+      @@config = {}
+      "Using blank config: failure loading #{config_file}"
+    end
   rescue Errno::ENOENT
     "Using blank config: missing config file #{config_file}"
   rescue Errno::EACCES
