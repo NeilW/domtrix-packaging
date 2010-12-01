@@ -3,6 +3,7 @@
 #  Copyright (c) 2010, Brightbox Systems
 #  Author: Neil Wilson
 
+require 'yaml'
 %w(
 queue_config
 ).each do |file|

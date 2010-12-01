@@ -34,4 +34,9 @@ class QueueConfig
     ENV[attribute.upcase] || @@config[attribute.downcase].to_s
   end
 
+  def self.write(config)
+    yaml_out = YAML.dump(config)
+    File.open(config_file, 'w') { |f| f.write yaml_out }
+  end
+
 end
