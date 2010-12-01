@@ -1,0 +1,37 @@
+{
+    "id" : "lba-u4ipfq",
+    "url" : "load_balancers/lba-u4ipfq",
+    "name" : "Lucy's load balancer",
+    "nodes" : [
+        {
+            "node": "srv-3jd0da"
+        },
+        {
+            "node": "srv-b05sdv"
+        }
+    ],
+    "listeners" : [
+        {
+            "protocol": "http",
+            "in": 80,
+            "out": 8080 
+        },
+        {
+            "protocol": "tcp",
+            "in": 443,
+            "out": 8443 
+        }
+    ],
+    "policy" : "least-connections",
+    "created_at" : "Thu Jun 27 20:31:00 +0000 2010",
+    "status" : "creating",
+    "healthcheck" : {
+        "type" : "http",
+        "request" : "/check",
+        "port" : "8080",
+        "interval" : "5000",
+        "timeout" : "5000",
+        "threshold_up" : "3",
+        "threshold_down" : "3"
+    }
+}
