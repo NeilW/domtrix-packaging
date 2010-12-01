@@ -9,8 +9,8 @@ class QueueConfig
 
   DEFAULT_CONFDIR = '/etc'
 
-  def config_file
-    File.join(CONFDIR || DEFAULT_CONFDIR, 'domtrix_config.yml')
+  def self.config_file
+    File.join(ENV['CONFDIR'] || DEFAULT_CONFDIR, 'domtrix_config.yml')
   end
 
   def self.load_config

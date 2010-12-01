@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#! /usr/bin/ruby1.8
 #    Brightbox - Configure a load balancer image
 #    Copyright (C) 2010 Brightbox Systems
 #    Author: Neil Wilson
@@ -20,7 +20,7 @@ end
 
 DEFAULT_DATADIR = '/usr/share/domtrix-lb/'
 HOST = ARGV.shift
-TEMPLATES = File.join(DATADIR || DEFAULT_DATADIR, 'templates')
+TEMPLATES = File.join(ENV['DATADIR'] || DEFAULT_DATADIR, 'templates')
 
 lbconfig = LoadBalancerConfig.new(ARGF.read, TEMPLATES)
 
