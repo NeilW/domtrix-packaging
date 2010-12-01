@@ -3,9 +3,9 @@ require 'erb'
 
 class LoadBalancerConfig
 
-  def initialize(json_config, template_dir)
+  def initialize(json_config, template)
     @config = JSON.parse(json_config)
-    @template_dir = template_dir
+    @template = template
   end
 
   def lb_id
@@ -21,7 +21,7 @@ class LoadBalancerConfig
   end
 
   def balance_method
-    @config['method'] || "roundrobin"
+    @config['policy'] || "roundrobin"
   end
 
   def app_name(listener)
@@ -32,16 +32,8 @@ class LoadBalancerConfig
     @config['dns_hostname']
   end
 
-  def node_fqdn(name)
-    "#{name}.gb1.brightbox.com"
-  end
-
   def haproxy_config
-    ERB.new(File.read(template), 0, '>').result(binding)
-  end
-
-  def template
-    File.join(@template_dir, "haproxy.cfg.erb")
+    ERB.new(@template, 0, '>').result(binding)
   end
 
 end

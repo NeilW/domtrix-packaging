@@ -20,9 +20,9 @@ end
 
 DEFAULT_DATADIR = '/usr/share/domtrix-lb/'
 HOST = ARGV.shift
-TEMPLATES = File.join(ENV['DATADIR'] || DEFAULT_DATADIR, 'templates')
+TEMPLATE = File.join(ENV['DATADIR'] || DEFAULT_DATADIR, 'templates/haproxy.cfg.erb')
 
-lbconfig = LoadBalancerConfig.new(ARGF.read, TEMPLATES)
+lbconfig = LoadBalancerConfig.new(ARGF.read, File.read(TEMPLATE))
 
 queue = DomtrixQueue.new(HOST)
 queue.execute(
