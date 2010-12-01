@@ -21,7 +21,12 @@ class LoadBalancerConfig
   end
 
   def balance_method
-    @config['policy'] || "roundrobin"
+    case @config['policy']
+    when 'least_connections'
+      'leastconn'
+    else
+      'roundrobin'
+    end
   end
 
   def app_name(listener)

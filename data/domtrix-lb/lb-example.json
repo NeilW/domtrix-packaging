@@ -22,7 +22,7 @@
             "out": 8443 
         }
     ],
-    "policy" : "least-connections",
+    "policy" : "least_connections",
     "created_at" : "Thu Jun 27 20:31:00 +0000 2010",
     "status" : "creating",
     "healthcheck" : {
