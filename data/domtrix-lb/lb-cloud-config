@@ -4,7 +4,8 @@ apt_upgrade: true
 apt_mirror: http://gb.archive.ubuntu.com/ubuntu/
 apt_sources:
  - source: "ppa:brightbox/ppa"
+ - source: "ppa:brightbox/experimental"
 packages:
  - haproxy
- - libstomp-ruby1.8
  - daemontools-run
+ - domtrix-lb
