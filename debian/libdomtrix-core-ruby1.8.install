@@ -1,6 +1,7 @@
+usr/bin/dom-create-config usr/sbin
 usr/lib/ruby/1.8/array_shuffle.rb
+usr/lib/ruby/1.8/domtrix_create_service.rb
 usr/lib/ruby/1.8/domtrix_core*
 usr/lib/ruby/1.8/domtrix_worker*
 usr/lib/ruby/1.8/domtrix_config*
 usr/lib/ruby/1.8/domtrix_payload*
-etc/domtrix_config.yml

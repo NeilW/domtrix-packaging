@@ -8,11 +8,10 @@ override_dh_auto_clean:
 	$(SETUP1.8) distclean
 
 override_dh_auto_configure:
-	$(SETUP1.8) config --installdirs=std --rubypath='/usr/bin/env ruby1.8'
+	$(SETUP1.8) config --installdirs=std --rubypath='/usr/bin/env ruby'
 
 override_dh_auto_build:
 	$(SETUP1.8) setup
 
 override_dh_auto_install:
 	$(SETUP1.8) install --prefix=debian/tmp
-	mv debian/tmp/etc/domtrix_config.yml.example debian/tmp/etc/domtrix_config.yml

@@ -1,3 +1,4 @@
-usr/bin/domtrix-lb-worker 
-usr/lib/ruby/1.8/domtrix_lb*
-usr/share/domtrix-lb/templates
+usr/bin/domtrix-lb-worker usr/sbin
+usr/bin/create-lb-service usr/sbin
+usr/lib/ruby/1.8/domtrix_lb
+usr/lib/ruby/1.8/domtrix_lb.rb
