@@ -8,6 +8,38 @@ class LoadBalancerConfig
     @template = template
   end
 
+  def healthcheck
+    @config["healthcheck"]
+  end
+
+  def healthcheck_request
+    (healthcheck && healthcheck["request"]) || "/"
+  end
+
+  def healthcheck_port
+    (healthcheck && healthcheck["port"])
+  end
+
+  def healthcheck_type
+    (healthcheck && healthcheck["type"])
+  end
+
+  def healthcheck_interval
+    (healthcheck && healthcheck["interval"]) || 5000
+  end
+
+  def healthcheck_timeout
+    (healthcheck && healthcheck["timeout"]) || 5000
+  end
+
+  def healthcheck_threshold_up
+    (healthcheck && healthcheck["threshold_up"]) || 3
+  end
+
+  def healthcheck_threshold_down
+    (healthcheck && healthcheck["threshold_down"]) || 3
+  end
+
   def lb_id
     @config["id"]
   end

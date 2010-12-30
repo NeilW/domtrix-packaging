@@ -15,6 +15,7 @@ defaults
         retries 3
         option redispatch
         maxconn 8192
+	spread-checks 	3
         contimeout      5000
         clitimeout      50000
         srvtimeout      50000
@@ -24,9 +25,8 @@ defaults
   listen <%= app_name(listener) %> 0.0.0.0:<%= listener['in'] %>
 
   balance <%= balance_method %>
-  <% if listener['protocol'] == 'http' %>
 
-    option httpchk
+  <% if listener['protocol'] == 'http' %>
     option forwardfor
     mode http
     option httplog
@@ -34,8 +34,16 @@ defaults
     mode tcp
     option tcplog
   <% end %>
+  <% if healthcheck_type == 'http' %>
+    option httpchk
+  <% end %>
+  <% if healthcheck %>
+    default-server inter <%= healthcheck_interval %> rise <%= healthcheck_threshold_up %> fall <%= healthcheck_threshold_down %> <% if healthcheck_port %>port <%= healthcheck_port %><% end %>
+
+  <% end %>
   <% nodes.each do | node | %>
-    server <%= node['node'] %> <%= node['node'] %>:<%= listener['out'] %> check maxconn 200
+    server <%= node['node'] %> <%= node['node'] %>:<%= listener['out'] %> <%= 'check' if healthcheck %>
+
   <% end %>
 
 <% end %>
