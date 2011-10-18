@@ -7,12 +7,12 @@
 
 class QueueConfig
 
-  DEFAULT_CONFDIR = '/etc'
+  DEFAULT_CONFDIR = '/etc/domtrix'
 
   def self.config_file
-    File.join(ENV['CONFDIR'] || DEFAULT_CONFDIR, 'domtrix_config.yml')
+    File.join(ENV['CONFDIR'] || DEFAULT_CONFDIR, 'config.yml')
   end
-
+ 
   def self.load_config
     @@config = {}
     @@config = YAML.load_file(config_file)
@@ -38,5 +38,6 @@ class QueueConfig
     yaml_out = YAML.dump(config)
     File.open(config_file, File::CREAT|File::TRUNC|File::WRONLY, mode) { |f| f.write yaml_out }
   end
+
 
 end

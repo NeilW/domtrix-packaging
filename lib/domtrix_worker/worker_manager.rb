@@ -1,34 +1,33 @@
 #!/usr/bin/env ruby
 #    Brightbox - Machine Message consumer
-#    Copyright (C) 2010, Neil Wilson, Brightbox Systems
+#    Copyright (C) 2011, Brightbox Systems
+#    Author: Neil Wilson
 #
 #  Listen on a queue and reboot the appropriate customer machine.
 
-#Patch Stomp::Client join command so it works properly.
-
-module Stomp
-  class Client
-    def join(limit = nil)
-      @listener_thread.join(limit)
-    end
-  end
-end
 
 class WorkerManager
   # Handle unimplemented Commands
 
+  include MonitorMixin
+
   attr_accessor :statistics_frequency
 
-  DEFAULT_FREQUENCY = 15
+  DEFAULT_FREQUENCY = 5
 
   def initialize(command_hash)
+    super()
     @command_hash = command_hash
     @command_hash.default = UnknownCommand
     @customer_machine = ENV["MACHINE"]
-    Syslog.open("#{@customer_machine}", Syslog::LOG_PID)
-    Syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
+    Syslog.open("#{File.basename($0)}(#{@customer_machine})", Syslog::LOG_PID)
+    if ENV['DEBUG']
+      Syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
+    else
+      Syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_INFO)
+    end
     if @customer_machine.to_s.empty?
-      Syslog.debug("#{File.basename $0}: No target details given - aborting")
+      Syslog.err("WorkerManager: #{File.basename $0}: No target details given - aborting")
       abort
     end
     Syslog.debug(QueueConfig.load_config)
@@ -39,26 +38,56 @@ class WorkerManager
     @report_queue = ENV["REPORT_QUEUE"] || ReportPayload.default_queue
     @task_queue = ENV["TASK_QUEUE"] || "/queue/#{@customer_machine}"
     @statistics_topic = ENV["STATISTICS_TOPIC"] || StatisticsPayload.default_topic
-    @mq_hosts = create_hash(QueueConfig.read('mq_hosts').split(','))
-    @stats = DomtrixStats::Keepalive.new
+    @mq_host_list = QueueConfig.read('mq_hosts').split(',')
+    @mq_hosts = create_hash(@mq_host_list.dup)
+    @stats = DomtrixStats::StatsProcessor.new(@customer_machine)
+    @stats.static_info = YAML::load(ENV["STATIC_INFO"].to_s) || @stats.static_info
+    Syslog.info("WorkerManager started for #{@customer_machine} listening on task queue #{@task_queue}")
   end
   
-  attr_accessor :stats
+  attr_reader :stats
   attr_reader :customer_machine
+
+  def terminated
+    @terminated 
+  end
+
+  def trap_terminations
+    Signal.trap("TERM") do 
+      Syslog.info "WorkerManager: SIGTERM received - completing current task"
+      @terminated = true
+    end
+    Syslog.debug "WorkerManager: TERM signal handling in place" 
+  end
+
+  def run_stats
+    @stats.tick do |report_name, resource, statistics|
+      publish_statistics("/topic/#{report_name}", resource, statistics)
+    end
+  end
 
   def run
     connect_or_abort
-    Syslog.debug "Reporting to queue #{@report_queue} by default"
-    Syslog.debug "Subscribing to queue #{@task_queue}"
+    Syslog.debug "WorkerManager: Reporting to queue #{@report_queue} by default"
+    Syslog.debug "WorkerManager: Subscribing to queue #{@task_queue}"
+    trap_terminations
     handle_incoming_messages
-    while @client.running
-      @stats.action do |resource, statistics|
-	publish_statistics(resource, statistics)
-      end
+    until terminated
+      run_stats
       @client.join(statistics_frequency)
     end
+    Syslog.debug("WorkerManager: Terminated main statistics loop")
+    Syslog.debug("WorkerManager: Running termination statistics")
+    @stats.terminate
+    run_stats
+    Syslog.debug("WorkerManager: Completed termination statistics")
+    Syslog.debug("WorkerManager: Waiting for listener to complete")
+    synchronize do
+      Syslog.debug("WorkerManager: Listener thread complete")
+      @client.close
+      Syslog.info("WorkerManager: Disconnected - exiting")
+    end
   ensure
-    @client && @client.close
     Syslog.close
   end
 
@@ -66,14 +95,14 @@ class WorkerManager
     @msg.headers["reply-to"] || @report_queue
   end
 
-  def publish_statistics(resource = nil, statistics = nil)
+  def publish_statistics(topic = @statistics_topic, resource = nil, statistics = nil)
     if resource
-      Syslog.debug "Reporting statistics for resource #{resource.to_s}"
+      Syslog.debug "WorkerManager: Reporting statistics for resource #{resource.to_s}"
+      payload = StatisticsPayload.new(:queue => @customer_machine, :resource_id => resource, :statistics => statistics)
+      @client.publish(topic, payload.body, payload.headers)
     else
-      Syslog.debug "Sending keepalive on stats channel"
+      Syslog.err "WorkerManager: Statistics reported with no associated resource"
     end
-    payload = StatisticsPayload.new(:queue => @customer_machine, :resource_id => resource, :statistics => statistics)
-    @client.publish(@statistics_topic, payload.body, payload.headers)
   end
 
 private
@@ -85,7 +114,7 @@ private
   end
 
   def report(state)
-    Syslog.debug "Reporting #{state.to_s} for task #{@task.id}"
+    Syslog.info "WorkerManager: Reporting #{state.to_s} for task #{@task.id}"
     payload = ReportPayload.new(:id => @task.id, :state => state.to_s)
     @client.publish(report_queue, payload.body, payload.headers(redelivered?))
   end
@@ -97,46 +126,56 @@ private
   def connect_or_abort
     hosts = @mq_hosts.collect { |h| h[:host] }
     if hosts.empty?
-      Syslog.err "Missing @mq_hosts - nothing to connect to"
+      Syslog.err "WorkerManager: Missing @mq_hosts - nothing to connect to"
       abort
     end
-    Syslog.debug "Connecting to broker(s): #{@mq_hosts.inspect}"
+    Syslog.info "WorkerManager: Connecting to broker(s): #{@mq_host_list.inspect}"
     # Set max_reconnect_attempts to 16 to ensure we get syslogs about
     # failures once every minute or so
     begin
       @client = Stomp::Client.new(:hosts => @mq_hosts, :randomize => true, :max_reconnect_attempts => 16)
       if @client.connection_frame.command == "CONNECTED"
-	Syslog.debug "Connected:  #{@client.connection_frame.headers["session"]}"
+	Syslog.debug "WorkerManager: Connected:  #{@client.connection_frame.headers["session"]}"
       else
 	raise "#{@client.connection_frame.command}: #{@client.connection_frame.headers["message"]}"
       end
     rescue StandardError => e
-      Syslog.err "Failed to connect: #{e.class}: #{e.message}"
+      Syslog.err "WorkerManager: Failed to connect: #{e.class}: #{e.message}"
       abort
     end
   end
 
   def handle_incoming_messages
     @client.subscribe(@task_queue, :ack => 'client') do |msg|
-      Syslog.debug "Message received on #{msg.headers['destination']}: #{msg.inspect}"
+      Syslog.debug "WorkerManager: Message received on #{msg.headers['destination']}: #{msg.inspect}"
+      Syslog.info "WorkerManager: Message #{msg.headers['message-id']} received on #{msg.headers['destination']}, correlation id #{msg.headers['correlation-id']}"
       @msg = msg
       @task = YAML::load(msg.body) # FIXME: Is this safe to trust?
       Syslog.debug @task.inspect
       command = @command_hash[@task.command].new(@customer_machine, @task.data)
-      Syslog.debug "Command initialised: #{command.inspect}"
+      Syslog.info "WorkerManager: Command initialised: #{command.inspect}"
       report :acknowledged unless redelivered?
-      Syslog.debug "Message acknowledged"
+      Syslog.info "WorkerManager: Message acknowledged"
       command.statistics_frequency = statistics_frequency
-      command.action do |resource, stats|
-        publish_statistics(resource, stats)
-      end
-      report command.state
-      if command.successful?
-	Syslog.debug "Command successful: clearing message"
-	@client.acknowledge(msg)
-	Syslog.debug "cleared."
-      else
-	Syslog.debug "Command failed: Moving on"
+      synchronize do
+      	Syslog.debug("WorkerManager: Enter Critical Section")
+	command.action do |resource, stats, queue |
+	  topic = if queue then "/topic/#{queue}" else @statistics_topic end
+	  publish_statistics(topic, resource, stats)
+	end
+	report command.state
+	if command.successful?
+	  Syslog.info "WorkerManager: Command successful: clearing message"
+	  @client.acknowledge(msg)
+	  Syslog.debug "WorkerManager: cleared."
+	else
+	  Syslog.info "WorkerManager: Command failed: Moving on"
+	end
+	if terminated
+	  @client.unsubscribe(@task_queue)
+	  Syslog.debug("WorkerManager: Terminating - Unsubscribed from #{@task_queue}")
+	end
+	Syslog.debug("WorkerManager: Exit Critical Section")
       end
     end
   end

@@ -32,7 +32,7 @@ class UnknownCommand
     end
     Syslog.debug("Generating action proc from block")
     Proc.new do |stats|
-      @action_block.call(resource, stats)
+      @action_block.call(resource, stats, nil)
     end
   end
 
