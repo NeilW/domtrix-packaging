@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+#  Brightbox - Machine Message service layout creator
+#  Copyright (c) 2010, Brightbox Systems
+#  Author: Neil Wilson
+#
+#  Create the daemontools service directory layout.
+#
+# == Synopsis 
+#  Creates domtrix service entries in the supervision area of daemontools
+#
+# == Examples
+#  Create a load-balancer supervision area.
+#     create-service lba-u4ipfq
+#
+#
+# == Usage 
+#   create-service [options] machine
+#
+#   For help use: create-service -h
+#
+# == Options
+#   -h, --help          Displays help message
+#   -v, --version       Display the version, then exit
+#   --debug		Switch on debug mode (use test servers)
+#   -q, --quiet         Output as little as possible, overrides verbose
+#   -V, --verbose       Verbose output
+#   -m, --memory-limit  Set the virtual memory limit in MB. [Default: 75]
+#
+# == Author
+#   Neil Wilson
+#
+# == Copyright
+#   Copyright (c) 2010, Neil Wilson, Brightbox Systems
+
+begin
+  require 'domtrix_create_service'
+rescue LoadError
+  require File.join(File.dirname(__FILE__),'..', 'relative-env')
+  retry
+end
+
+# Create and run the application
+app = DomtrixCreateService.new(ARGV, STDIN)
+app.progname = File.basename(__FILE__)
+app.root_required = true
+app.worker_command = `which domtrix-lb-worker`.chomp
+app.run

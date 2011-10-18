@@ -1,5 +1,5 @@
 # Example domtrix config file.
-# Copy to 'config.yml' and edit as required.
+# Copy to 'domtrix_config.yml' and edit as required.
 
 # Username and password to log onto Active MQ
 mq_login: fred

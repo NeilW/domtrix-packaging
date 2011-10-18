@@ -15,6 +15,7 @@ class DataCommand < UnknownCommand
     end
   rescue StandardError => e
     Syslog.debug("Rescued exception: #{$!.inspect}: #{e.message}")
+    Syslog.err("DataCommand: Rescued exception: #{e.to_s}: #{e.message}")
     @state = "error: " + e.message
   end
 

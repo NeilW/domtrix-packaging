@@ -7,16 +7,21 @@
 
 class QueueConfig
 
-  DEFAULT_CONFDIR = '/etc/'
+  DEFAULT_CONFDIR = '/etc/domtrix'
 
-  def config_file
-    File.join(CONFDIR || DEFAULT_CONFDIR, 'domtrix_lb_config.yml')
+  def self.config_file
+    File.join(ENV['CONFDIR'] || DEFAULT_CONFDIR, 'config.yml')
   end
-
+ 
   def self.load_config
     @@config = {}
     @@config = YAML.load_file(config_file)
-    "Configuration loaded #{@@config.keys.inspect}"
+    if @@config
+      "Configuration loaded #{@@config.keys.inspect}"
+    else
+      @@config = {}
+      "Using blank config: failure loading #{config_file}"
+    end
   rescue Errno::ENOENT
     "Using blank config: missing config file #{config_file}"
   rescue Errno::EACCES
@@ -28,5 +33,11 @@ class QueueConfig
   def self.read(attribute)
     ENV[attribute.upcase] || @@config[attribute.downcase].to_s
   end
+
+  def self.write(config, mode=0644)
+    yaml_out = YAML.dump(config)
+    File.open(config_file, File::CREAT|File::TRUNC|File::WRONLY, mode) { |f| f.write yaml_out }
+  end
+
 
 end

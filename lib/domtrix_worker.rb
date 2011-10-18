@@ -1,18 +1,18 @@
 #!/usr/bin/env ruby
-#  Brightbox - Domtrix Abstract Class loader
+#  Brightbox - Domtrix Main worker loader
 #  Copyright (c) 2010, Brightbox Systems
 #  Author: Neil Wilson
 
 require 'socket'
 require 'stomp'
 require 'syslog'
-require 'yaml'
 require 'array_shuffle'
 require 'domtrix_payload'
 require 'domtrix_stats'
 require 'domtrix_config'
+require 'monitor'
 %w(
 worker_manager
 ).each do |file|
-  require "domtrix_worker/#{file}"
+  autoload(file.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase },"domtrix_worker/#{file}")
 end

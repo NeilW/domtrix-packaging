@@ -3,9 +3,41 @@ require 'erb'
 
 class LoadBalancerConfig
 
-  def initialize(json_config, template_dir)
+  def initialize(json_config, template)
     @config = JSON.parse(json_config)
-    @template_dir = template_dir
+    @template = template
+  end
+
+  def healthcheck
+    @config["healthcheck"]
+  end
+
+  def healthcheck_request
+    (healthcheck && healthcheck["request"]) || "/"
+  end
+
+  def healthcheck_port
+    (healthcheck && healthcheck["port"])
+  end
+
+  def healthcheck_type
+    (healthcheck && healthcheck["type"])
+  end
+
+  def healthcheck_interval
+    (healthcheck && healthcheck["interval"]) || 5000
+  end
+
+  def healthcheck_timeout
+    (healthcheck && healthcheck["timeout"]) || 5000
+  end
+
+  def healthcheck_threshold_up
+    (healthcheck && healthcheck["threshold_up"]) || 3
+  end
+
+  def healthcheck_threshold_down
+    (healthcheck && healthcheck["threshold_down"]) || 3
   end
 
   def lb_id
@@ -16,12 +48,17 @@ class LoadBalancerConfig
     @config['listeners'] || []
   end
 
-  def pool
-    @config['pool'] || []
+  def nodes
+    @config['nodes'] || []
   end
 
   def balance_method
-    @config['method'] || "roundrobin"
+    case @config['policy']
+    when 'least_connections'
+      'leastconn'
+    else
+      'roundrobin'
+    end
   end
 
   def app_name(listener)
@@ -32,16 +69,8 @@ class LoadBalancerConfig
     @config['dns_hostname']
   end
 
-  def node_fqdn(name)
-    "#{name}.gb1.brightbox.com"
-  end
-
   def haproxy_config
-    ERB.new(File.read(template), 0, '>').result(binding)
-  end
-
-  def template
-    File.join(@template_dir, "haproxy.cfg.erb")
+    ERB.new(@template, 0, '>').result(binding)
   end
 
 end

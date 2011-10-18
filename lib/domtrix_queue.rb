@@ -12,7 +12,7 @@ require 'domtrix_config'
 
 class DomtrixQueue
 
-DEFAULT_REPORT_QUEUE = '/queue/cli_report_'+$$.to_s
+DEFAULT_REPORT_QUEUE = '/queue/CLI.report.'+$$.to_s
 
 def make_queue_hosts
   @queue_hosts = create_hash(QueueConfig.read('mq_hosts').split(','))

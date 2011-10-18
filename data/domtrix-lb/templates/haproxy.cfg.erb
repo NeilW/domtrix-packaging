@@ -24,9 +24,8 @@ defaults
   listen <%= app_name(listener) %> 0.0.0.0:<%= listener['in'] %>
 
   balance <%= balance_method %>
-  <% if listener['protocol'] == 'http' %>
 
-    option httpchk
+  <% if listener['protocol'] == 'http' %>
     option forwardfor
     mode http
     option httplog
@@ -34,8 +33,15 @@ defaults
     mode tcp
     option tcplog
   <% end %>
-  <% pool.each do | node | %>
-    server <%= node['node'] %> <%= node_fqdn(node['node']) %>:<%= listener['out'] %> check maxconn 200
+  <% if healthcheck_type == 'http' %>
+    option httpchk
+  <% end %>
+  <% nodes.each do | node | %>
+    server <%= node['node'] %> <%= node['node'] %>:<%= listener['out'] %> <%if healthcheck %>check inter <%= healthcheck_interval %> rise <%= healthcheck_threshold_up %> fall <%= healthcheck_threshold_down %> <% if healthcheck_port %>port <%= healthcheck_port %><% end %><% end %>
+
+  <% end %>
+
+
   <% end %>
 
 <% end %>

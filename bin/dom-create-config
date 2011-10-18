@@ -1,0 +1,34 @@
+#! /usr/bin/ruby1.8
+#    Brightbox - Create a domtrix configuration
+#    Copyright (C) 2010 Brightbox Systems
+#    Author: Neil Wilson
+#
+#  dom-create-config username password broker-list [ftpusername ftppassword]
+
+
+begin
+  require "domtrix_config"
+rescue LoadError
+  require File.join(File.dirname(__FILE__),'..', 'relative-env')
+  retry
+end
+
+unless [3,5].include? ARGV.length
+  abort "Usage: #{File.basename $0} username password broker-list [ftp-user ftp-password]"
+end
+
+unless ENV['CONFDIR'] || Process.euid == 0
+  abort "#{File.basename $0}: must be run as root"
+end
+
+config = {
+  'mq_login' => ARGV[0],
+  'mq_password' => ARGV[1],
+  'mq_hosts' => ARGV[2]
+}
+
+config['ftp_login'] = ARGV[3] if ARGV[3]
+config['ftp_password'] = ARGV[4] if ARGV[4]
+
+QueueConfig.write(config,0600)
+exit

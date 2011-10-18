@@ -9,7 +9,6 @@ root_privileges
 unknown_command
 data_command
 abort_command
-keepalive
 ).each do |file|
-  require "domtrix_core/#{file}"
+  autoload(file.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase },"domtrix_core/#{file}")
 end
