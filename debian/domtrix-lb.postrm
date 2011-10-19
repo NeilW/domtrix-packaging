@@ -1,0 +1,11 @@
+#!/bin/sh
+# postrm script for domtrix-lb
+
+set -e
+
+# Reload the sysctl files
+service procps start
+
+#DEBHELPER#
+
+exit -
