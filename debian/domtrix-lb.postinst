@@ -8,4 +8,4 @@ service procps start
 
 #DEBHELPER#
 
-exit -
+exit 0
