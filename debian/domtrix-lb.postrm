@@ -4,7 +4,7 @@
 set -e
 
 # Reload the sysctl files
-service procps start
+service procps start || echo "Failed to reload sysctl files. KEEPALIVES will not be at defaults"
 
 #DEBHELPER#
 
