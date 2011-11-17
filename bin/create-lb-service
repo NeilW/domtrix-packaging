@@ -1,47 +1,44 @@
-#!/usr/bin/env ruby
+#!/bin/sh
 #  Brightbox - Machine Message service layout creator
 #  Copyright (c) 2010, Brightbox Systems
 #  Author: Neil Wilson
 #
-#  Create the daemontools service directory layout.
-#
-# == Synopsis 
-#  Creates domtrix service entries in the supervision area of daemontools
-#
-# == Examples
-#  Create a load-balancer supervision area.
-#     create-service lba-u4ipfq
-#
-#
-# == Usage 
-#   create-service [options] machine
-#
-#   For help use: create-service -h
-#
-# == Options
-#   -h, --help          Displays help message
-#   -v, --version       Display the version, then exit
-#   --debug		Switch on debug mode (use test servers)
-#   -q, --quiet         Output as little as possible, overrides verbose
-#   -V, --verbose       Verbose output
-#   -m, --memory-limit  Set the virtual memory limit in MB. [Default: 75]
-#
-# == Author
-#   Neil Wilson
-#
-# == Copyright
-#   Copyright (c) 2010, Neil Wilson, Brightbox Systems
+#  Create an upstart init script and activate it
 
-begin
-  require 'domtrix_create_service'
-rescue LoadError
-  require File.join(File.dirname(__FILE__),'..', 'relative-env')
-  retry
-end
+set -e
 
-# Create and run the application
-app = DomtrixCreateService.new(ARGV, STDIN)
-app.progname = File.basename(__FILE__)
-app.root_required = true
-app.worker_command = `which domtrix-lb-worker`.chomp
-app.run
+fail() {
+  echo "$(basename $0): $1" >&2
+  exit ${2:-1}
+}
+
+[ "$#" -eq 1 ] || fail "specify name of load balancer queue"
+[ "$(id -u)" -eq 0 ] || fail "must be run as root"
+worker_command=$(which domtrix-lb-worker) || fail "can't find worker command"
+config_file=/etc/domtrix/config.yml
+
+if [ -e "/etc/init/$1.conf" ]
+then
+	echo "Upstart init file '$1.conf' exists - skipping"
+else
+	cat > /etc/init/$1.conf <<EOF
+description	"Load balancer configurator"
+
+start on (stopped rc RUNLEVEL=[2345] and stopped cloud-config)
+stop on runlevel [!2345]
+
+respawn
+respawn limit 10 5
+umask 022
+
+env MACHINE=$1
+#env DEBUG=1
+
+exec ${worker_command}
+
+post-stop script
+  test -r ${config_file} || sleep 5
+end script
+EOF
+	start $1
+fi

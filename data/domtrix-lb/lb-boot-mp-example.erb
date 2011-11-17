@@ -1,0 +1,61 @@
+Content-Type: multipart/mixed; boundary="===============1861108817=="
+MIME-Version: 1.0
+
+--===============1861108817==
+Content-Type: text/cloud-config; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="cloud-config.txt"
+
+#cloud-config
+apt_update: true
+apt_upgrade: true
+apt_sources:
+ - source: "ppa:brightbox/build"
+packages:
+ - haproxy
+ - domtrix-lb
+mounts:
+ - [ /swapfile, none, swap, "defaults,nobootwait", "0", "0" ]
+
+--===============1861108817==
+Content-Type: text/x-shellscript; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="config.sh"
+
+#!/bin/sh
+cat > ${1:-/etc/domtrix/config.yml} <<EOF
+mq_login:        <%= mq_login %>
+mq_password:     <%= mq_password %>
+mq_hosts:        <%= mq_hosts.join(',') %>
+EOF
+/bin/dd if=/dev/zero of=/swapfile bs=1M count=256 && /sbin/mkswap /swapfile && /sbin/swapon /swapfile
+
+--===============1861108817==
+Content-Type: text/upstart-job; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="domtrix-lb.conf"
+
+#upstart-job
+description	"Load balancer configurator"
+
+start on (stopped rc RUNLEVEL=[2345] and stopped cloud-config)
+stop on runlevel [!2345]
+
+respawn
+respawn limit 10 5
+umask 022
+
+env MACHINE=<%= mq_queue %>
+#env DEBUG=1
+
+exec /usr/sbin/domtrix-lb-worker
+
+# No config? Wait a bit for it to appear.
+post-stop script
+  test -r /etc/domtrix/config.yml || sleep 5
+end script
+
+--===============1861108817==--
