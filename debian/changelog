@@ -1,3 +1,9 @@
+domtrix (0.0.3-0ubuntu1) natty; urgency=low
+
+  * New Upstream code base
+
+ -- Neil Wilson <neil@aldur.co.uk>  Thu, 17 Nov 2011 12:30:09 +0000
+
 domtrix (0.0.2-0ubuntu1) natty; urgency=low
 
   * New Upstream code base
