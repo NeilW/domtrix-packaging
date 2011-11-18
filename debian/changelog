@@ -1,3 +1,10 @@
+domtrix (0.0.3-0ubuntu2) natty; urgency=low
+
+  * Alter maintainer scripts to restart worker jobs on upgrade/remove
+  * Add source-format
+
+ -- Neil Wilson <neil@aldur.co.uk>  Fri, 18 Nov 2011 10:07:49 +0000
+
 domtrix (0.0.3-0ubuntu1) natty; urgency=low
 
   * New Upstream code base
