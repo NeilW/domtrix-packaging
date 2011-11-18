@@ -6,6 +6,15 @@ set -e
 # Reload the sysctl files
 service procps start || echo "Failed to reload sysctl files. KEEPALIVES will not be at defaults"
 
+case "$1" in
+	purge)
+		echo "Purging Upstart scripts"
+		magic_word=domtrix-lb-worker
+		grep -F -l "${magic_word}" | xargs rm -f
+		;;
+esac
+		
+
 #DEBHELPER#
 
 exit 0
