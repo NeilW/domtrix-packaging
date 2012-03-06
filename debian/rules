@@ -1,18 +1,19 @@
 #!/usr/bin/make -f
-SETUP1.8=/usr/bin/env ruby1.8 setup.rb
-SETUP1.9=/usr/bin/env ruby1.9 setup.rb
+#export DH_VERBOSE=1
+#
+# Uncomment to ignore all test failures (but the tests will run anyway)
+#export DH_RUBY_IGNORE_TESTS=all
+#
+# Uncomment to ignore some test failures (but the tests will run anyway).
+# Valid values:
+#export DH_RUBY_IGNORE_TESTS=ruby1.8 ruby1.9.1 require-rubygems
+#
+# If you need to specify the .gemspec (eg there is more than one)
+#export DH_RUBY_GEMSPEC=gem.gemspec
+
 %:
-	dh $@
+	dh $@ --buildsystem=ruby --with ruby
 
-override_dh_auto_clean:
-	$(SETUP1.8) distclean
-
-override_dh_auto_configure:
-	$(SETUP1.8) config --installdirs=std --rubypath='/usr/bin/env ruby'
-
-override_dh_auto_build:
-	$(SETUP1.8) setup
-
-override_dh_auto_install:
-	$(SETUP1.8) install --prefix=debian/tmp
-	install -D --mode 644 -o root -g root debian/30-domtrix-lb-keepalive.conf $(CURDIR)/debian/tmp/etc/sysctl.d/30-domtrix-lb-keepalive.conf
+override_dh_install:
+	dh_install
+	mv -v debian/domtrix-lb/usr/bin/create-lb-service debian/domtrix-lb/usr/bin/dom-create-config debian/domtrix-lb/usr/bin/domtrix-lb-worker debian/domtrix-lb/usr/sbin
