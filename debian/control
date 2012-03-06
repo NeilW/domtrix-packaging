@@ -3,13 +3,18 @@ Section: ruby
 Priority: extra
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Neil Wilson <neil@aldur.co.uk>
-Build-Depends: debhelper (>= 7.0.50~), ruby1.8, ruby1.8-dev
-Standards-version: 3.9.1
+Build-Depends: debhelper (>= 7.0.50~), gem2deb (>= 0.2.6~)
+Standards-version: 3.9.2
+Homepage: http://github.com/NeilW/domtrix-packaging
+XS-Ruby-Versions: all
 
 Package: domtrix-lb
 Architecture: all
-Depends: ruby, libdomtrix-core-ruby, libjson-ruby, ${misc:Depends}
-Suggests: daemontools-run
+XB-Ruby-Versions: ${ruby:Versions}
+Depends: ${shlibs:Depends}, ${misc:Depends}, ruby | ruby-interpreter, ruby-json, ruby-stomp
+Provides: libdomtrix-core-ruby, libdomtrix-core-ruby1.8
+Replaces: libdomtrix-core-ruby(<< 0.0.3-0ubuntu3), libdomtrix-core-ruby1.8 (<< 0.0.3-0ubuntu3)
+Breaks: libdomtrix-core-ruby(<< 0.0.3-0ubuntu3), libdomtrix-core-ruby1.8 (<< 0.0.3-0ubuntu3)
 Description: domtrix worker package for load balancers
  Domtrix provides a Stomp based message queue consumer system for managing
  virtual machines.
@@ -17,21 +22,19 @@ Description: domtrix worker package for load balancers
  This worker manages load balancer images based on haproxy.
 
 Package: libdomtrix-core-ruby
+Section: oldlibs
+Priority: extra
 Architecture: all
-Depends: libdomtrix-core-ruby1.8, ${misc:Depends}
-Description: core libraries for the domtrix worker system
- Domtrix provides a Stomp based message queue consumer system for managing
- virtual machines.
- .
- This package is a dependency package, which depends on the package
- containing the actual bbcloud package for the default Ruby version
- (currently 1.8).
+Depends: ${misc:Depends}, domtrix-lb
+Description: Transitional package for domtrix-lb
+ This is a transitional package to ease upgrades to the domtrix-lb
+ package. It can be safely removed.
 
 Package: libdomtrix-core-ruby1.8
+Section: oldlibs
+Priority: extra
 Architecture: all
-Depends: ruby, ruby1.8, libstomp-ruby1.8, ${misc:Depends}
-Description: core libraries for the domtrix worker system
- Domtrix provides a Stomp based message queue consumer system for managing
- virtual machines.
- .
- This package contains the core libraries for Ruby1.8
+Depends: ${misc:Depends}, domtrix-lb
+Description: Transitional package for domtrix-lb
+ This is a transitional package to ease upgrades to the domtrix-lb
+ package. It can be safely removed.
