@@ -1,10 +1,11 @@
-Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=135
-Name: domtrix
-Maintainer: Neil Wilson <neil@aldur.co.uk>
-Source: https://NeilW@github.com/NeilW/domtrix.git
+Format: http://dep.debian.net/deps/dep5
+Upstream-Name: domtrix-lb
+Upstream-Contact: Neil Wilson <neil@aldur.co.uk>
+Source: https://github.com/NeilW/domtrix-packaging
 
-Copyright: 2010 Brightbox Systems
-License: AGPLv3
+Files: *
+Copyright: 2010-2012 Brightbox Systems
+License: AGPL-3.0
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as published by
  the Free Software Foundation, either version 3 of the License, or

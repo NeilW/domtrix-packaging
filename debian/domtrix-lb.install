@@ -1,5 +1,1 @@
-usr/bin/domtrix-lb-worker usr/sbin
-usr/bin/create-lb-service usr/sbin
-usr/lib/ruby/1.8/domtrix_lb
-usr/lib/ruby/1.8/domtrix_lb.rb
-etc/sysctl.d/*
+debian/30-domtrix-lb-keepalive.conf etc/sysctl.d

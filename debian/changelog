@@ -1,3 +1,9 @@
+domtrix (0.0.3-0ubuntu3) oneiric; urgency=low
+
+  * Update to gem2deb packaging
+
+ -- Neil Wilson <neil@aldur.co.uk>  Mon, 05 Mar 2012 12:54:36 +0000
+
 domtrix (0.0.3-0ubuntu2) natty; urgency=low
 
   * Alter maintainer scripts to restart worker jobs on upgrade/remove
