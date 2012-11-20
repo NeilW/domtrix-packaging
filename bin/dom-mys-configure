@@ -1,0 +1,28 @@
+#! /usr/bin/ruby1.8
+#    Brightbox - Configure a load balancer image
+#    Copyright (C) 2010 Brightbox Systems
+#    Author: Neil Wilson
+#
+#  dom-lb-configure queue-name json-config
+
+
+begin
+  require "domtrix_queue"
+rescue LoadError
+  require File.join(File.dirname(__FILE__),'..', 'relative-env')
+  retry
+end
+
+if ARGV.length.zero?
+  abort "Usage: #{File.basename $0} queue-name admin_password"
+end
+
+ADMIN_PASSWORD = ARGV.shift
+
+queue = DomtrixQueue.new(HOST)
+queue.execute(
+  'configure',
+  {:admin_password => ADMIN_PASSWORD},
+  "Configuring MySQL service"
+  )
+exit
