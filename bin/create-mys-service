@@ -1,0 +1,44 @@
+#!/bin/sh
+#  Brightbox - Machine Message service layout creator
+#  Copyright (c) 2010, Brightbox Systems
+#  Author: Neil Wilson
+#
+#  Create an upstart init script and activate it
+
+set -e
+
+fail() {
+  echo "$(basename $0): $1" >&2
+  exit ${2:-1}
+}
+
+[ "$#" -eq 1 ] || fail "specify name of MySQL queue"
+[ "$(id -u)" -eq 0 ] || fail "must be run as root"
+worker_command=$(which domtrix-mys-worker) || fail "can't find worker command"
+config_file=/etc/domtrix/config.yml
+
+if [ -e "/etc/init/$1.conf" ]
+then
+	echo "Upstart init file '$1.conf' exists - skipping"
+else
+	cat > /etc/init/$1.conf <<EOF
+description	"Load balancer configurator"
+
+start on (stopped rc RUNLEVEL=[2345] and stopped cloud-config)
+stop on runlevel [!2345]
+
+respawn
+respawn limit 10 5
+umask 022
+
+env MACHINE=$1
+#env DEBUG=1
+
+exec ${worker_command}
+
+post-stop script
+  test -r ${config_file} || sleep 5
+end script
+EOF
+	start $1
+fi
