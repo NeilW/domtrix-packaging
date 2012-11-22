@@ -15,11 +15,11 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, ruby | ruby-interpreter, ruby-json,
 Provides: libdomtrix-core-ruby, libdomtrix-core-ruby1.8
 Replaces: libdomtrix-core-ruby(<< 0.0.3-0ubuntu3), libdomtrix-core-ruby1.8 (<< 0.0.3-0ubuntu3)
 Breaks: libdomtrix-core-ruby(<< 0.0.3-0ubuntu3), libdomtrix-core-ruby1.8 (<< 0.0.3-0ubuntu3)
-Description: domtrix worker package for load balancers
+Description: domtrix worker package for services
  Domtrix provides a Stomp based message queue consumer system for managing
  virtual machines.
  .
- This worker manages load balancer images based on haproxy.
+ This worker manages load balancer images based on haproxy and MySQL images
 
 Package: libdomtrix-core-ruby
 Section: oldlibs
