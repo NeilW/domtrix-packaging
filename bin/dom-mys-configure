@@ -13,10 +13,11 @@ rescue LoadError
   retry
 end
 
-if ARGV.length.zero?
+unless ARGV.length == 2
   abort "Usage: #{File.basename $0} queue-name admin_password"
 end
 
+HOST = ARGV.shift
 ADMIN_PASSWORD = ARGV.shift
 
 queue = DomtrixQueue.new(HOST)
