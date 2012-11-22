@@ -7,8 +7,8 @@ set -e
 service procps start || echo "Failed to reload sysctl files. KEEPALIVE may not work"
 
 # Reload any running workers
-magic_word=domtrix-lb-worker
-job_list=$(grep -F -l "${magic_word}" /etc/init/*|sed 's|^/etc/init/\(.*\).conf$|\1|')
+magic_word="domtrix-(lb|mys)-worker"
+job_list=$(grep -E -l "${magic_word}" /etc/init/*|sed 's|^/etc/init/\(.*\).conf$|\1|')
 for job in ${job_list}
 do
 	echo "Starting ${job}"
