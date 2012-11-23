@@ -18,6 +18,12 @@ private
     @data[:admin_password]
   end
 
+  def puppet_config_hash
+    {
+      "admin_password" => admin_password
+    }
+  end
+
   def run(command, error_message)
     system(command)
     unless $?.success?
@@ -34,7 +40,7 @@ private
     Syslog.debug "Updating Mysql config"
     File.open("/etc/brightbox/mysql-system/config.yaml",
       File::CREAT|File::TRUNC|File::WRONLY, 0600) do |f|
-      YAML.dump @data, f
+      YAML.dump(puppet_config_hash, f)
     end
     Syslog.debug "Updated."
   end
