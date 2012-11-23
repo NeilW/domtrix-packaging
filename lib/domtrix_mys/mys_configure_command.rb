@@ -30,9 +30,10 @@ private
   end
 
 
-  def write_mysql_config
+  def write_mysql_puppet_config
     Syslog.debug "Updating Mysql config"
-    File.open("/etc/brightbox/mysql-system/config.yaml", "w") do |f|
+    File.open("/etc/brightbox/mysql-system/config.yaml",
+      File::CREAT|File::TRUNC|File::WRONLY, 0600) do |f|
       YAML.dump @data, f
     end
     Syslog.debug "Updated."
