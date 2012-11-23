@@ -1,9 +1,9 @@
-domtrix (0.0.4-0ubuntu1) UNRELEASED; urgency=low
+domtrix (0.0.4-0ubuntu1) precise; urgency=low
 
   * New Upstream code base
   * Alter maintainer scripts to handle mysql jobs
 
- -- Neil Wilson <neil@aldur.co.uk>  Tue, 20 Nov 2012 14:51:29 +0000
+ -- Neil Wilson <neil@aldur.co.uk>  Fri, 23 Nov 2012 10:23:41 +0000
 
 domtrix (0.0.3-0ubuntu3) oneiric; urgency=low
 
