@@ -4,8 +4,6 @@
 #  Author: Neil Wilson
 
 require 'yaml'
-%w(
-queue_config
-).each do |file|
-  autoload(file.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase },"domtrix_config/#{file}")
-end
+require 'singleton'
+require 'domtrix_config/queue_config'
+require 'domtrix_config/domtrix_config'

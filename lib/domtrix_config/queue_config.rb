@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 #    Brightbox - Command processor classes
 #    Copyright (C) 2010, Brightbox Systems
 #    Author: Neil Wilson
@@ -6,38 +5,47 @@
 #  Wrap the Config settings
 
 class QueueConfig
+  
+  include Singleton
 
   DEFAULT_CONFDIR = '/etc/domtrix'
 
-  def self.config_file
+  def config_file
     File.join(ENV['CONFDIR'] || DEFAULT_CONFDIR, 'config.yml')
   end
- 
-  def self.load_config
-    @@config = {}
-    @@config = YAML.load_file(config_file)
-    if @@config
-      "Configuration loaded #{@@config.keys.inspect}"
+
+  def load_config
+    @config = YAML.load_file(config_file)
+    if @config
+      @load_message = "Configuration loaded #{@config.keys.inspect}"
     else
-      @@config = {}
-      "Using blank config: failure loading #{config_file}"
+      @load_message = "Using blank config: failure loading #{config_file}"
     end
   rescue Errno::ENOENT
-    "Using blank config: missing config file #{config_file}"
+    @load_message = "Using blank config: missing config file #{config_file}"
   rescue Errno::EACCES
-    "Using blank config: no permission to read config file #{config_file}"
+    @load_message = "Using blank config: no permission to read config file #{config_file}"
   rescue ArgumentError => e
-    "Error in config file #{config_file}: #{e.message}"
+    @load_message = "Error in config file #{config_file}: #{e.message}"
   end
 
-  def self.read(attribute)
-    ENV[attribute.upcase] || @@config[attribute.downcase].to_s
+  attr_reader :load_message
+
+  def [](attribute)
+    ENV[attribute.to_s.upcase] ||
+      config[attribute.to_s.downcase]
   end
 
-  def self.write(config, mode=0644)
+  def write(config, mode=0644)
     yaml_out = YAML.dump(config)
     File.open(config_file, File::CREAT|File::TRUNC|File::WRONLY, mode) { |f| f.write yaml_out }
   end
 
+private 
+
+  def config
+    @config || load_config
+    @config ||= {}
+  end
 
 end

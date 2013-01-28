@@ -12,16 +12,18 @@ require 'domtrix_config'
 
 class DomtrixQueue
 
+include DomtrixConfig
+
 DEFAULT_REPORT_QUEUE = '/queue/CLI.report.'+$$.to_s
 
 def make_queue_hosts
-  @queue_hosts = create_hash(QueueConfig.read('mq_hosts').split(','))
+  @queue_hosts = create_hash(config['mq_hosts'].split(','))
 end
 
 def initialize(queue_name, report_queue = DEFAULT_REPORT_QUEUE)
-  puts QueueConfig.load_config
-  @mq_login = QueueConfig.read('mq_login')
-  @mq_password = QueueConfig.read('mq_password')
+  config.load_config
+  @mq_login = config['mq_login']
+  @mq_password = config['mq_password']
   @id = 1001
   @task_queue = "/queue/#{queue_name}"
   @report_queue = ENV["report_queue"] || report_queue

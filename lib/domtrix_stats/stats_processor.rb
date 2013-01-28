@@ -36,10 +36,10 @@ module DomtrixStats
         stats_object.current_domain { current_domain }
 	stats_object.terminate if terminated?
 	Syslog.debug("#{self.class.name}: Ticking #{stats_object.name}")
-	stats_object.tick do |stats|
+	stats_object.tick do |topic, stats|
 	  stats = @static_info.merge(stats) if stats_object.send_static_info?
-	  Syslog.info("#{self.class.name}: Stats generated for #{stats_object.name}")
-	  stats_handler.call(stats_object.name, @machine, stats)
+	  Syslog.info("#{self.class.name}: Stats generated for topic #{topic}")
+	  stats_handler.call(topic, @machine, stats)
 	end
       end
     rescue Libvirt::Error => e
@@ -53,7 +53,7 @@ module DomtrixStats
     def current_domain
       @guest ||= conn.lookup_domain_by_name(@machine)
     rescue Libvirt::RetrieveError
-      Syslog.debug("#{self.class.name}: Unable to find running domain #{@machine} - skipping current stats collector.")
+      Syslog.debug("#{self.class.name}: Unable to find running domain #{@machine}")
       @guest = nil
     end
 

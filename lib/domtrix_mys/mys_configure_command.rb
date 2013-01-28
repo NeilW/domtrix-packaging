@@ -7,6 +7,7 @@
 class MysConfigureCommand < DataCommand
   
   include RootPrivileges
+  include CommandRunner
 
 private
 
@@ -23,18 +24,6 @@ private
       "admin_password" => admin_password
     }
   end
-
-  def run(command, error_message)
-    system(command)
-    unless $?.success?
-      if $?.exited?
-	raise RuntimeError, "(#{$?.exitstatus}): " + error_message
-      else
-	raise RuntimeError, "Abnormal exit:" + error_message
-      end
-    end
-  end
-
 
   def write_mysql_puppet_config
     Syslog.debug "Updating Mysql config"

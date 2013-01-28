@@ -7,23 +7,13 @@
 class LbConfigureCommand < DataCommand
   
   include RootPrivileges
+  include CommandRunner
 
 private
 
   def valid_data?
     @data &&
     !@data.empty?
-  end
-
-  def run(command, error_message)
-    system(command)
-    unless $?.success?
-      if $?.exited?
-	raise RuntimeError, "(#{$?.exitstatus}): " + error_message
-      else
-	raise RuntimeError, "Abnormal exit:" + error_message
-      end
-    end
   end
 
   def haproxy_enabled?
@@ -40,19 +30,19 @@ private
 
   def enable_haproxy
     Syslog.debug "Disabled haproxy detected. Enabling"
-    run('sed -i \'s/^\(ENABLED=\)0$/\11/\' /etc/default/haproxy', "Problem enabling haproxy")
+    run('sed -i \'s/^\(ENABLED=\)0$/\11/\' /etc/default/haproxy', "enable haproxy")
     Syslog.debug "Enabled."
   end
 
   def restart_haproxy
     Syslog.debug "Restarting haproxy"
-    run("service haproxy restart >/dev/null 2>&1", "Failed to restart haproxy")
+    run("service haproxy restart >/dev/null 2>&1", "restart haproxy")
     Syslog.debug "Restarted"
   end
 
   def start_haproxy
     Syslog.debug "Starting haproxy for first time"
-    run("service haproxy start >/dev/null 2>&1", "Failed to start haproxy")
+    run("service haproxy start >/dev/null 2>&1", "start haproxy")
     Syslog.debug "Started"
   end
 

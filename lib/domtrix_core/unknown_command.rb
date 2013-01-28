@@ -6,7 +6,7 @@
 
 class UnknownCommand
   
-  attr_accessor :target
+  attr_accessor :target, :data
   attr_accessor :statistics_frequency
   attr_reader :state
 

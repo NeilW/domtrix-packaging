@@ -10,6 +10,7 @@ class WorkerManager
   # Handle unimplemented Commands
 
   include MonitorMixin
+  include DomtrixConfig
 
   attr_accessor :statistics_frequency
 
@@ -30,15 +31,16 @@ class WorkerManager
       Syslog.err("WorkerManager: #{File.basename $0}: No target details given - aborting")
       abort
     end
-    Syslog.debug(QueueConfig.load_config)
+    config.load_config
+    Syslog.debug(config.load_message)
 
     @statistics_frequency = DEFAULT_FREQUENCY
-    @mq_login = QueueConfig.read('mq_login')
-    @mq_password = QueueConfig.read('mq_password')
+    @mq_login = config['mq_login']
+    @mq_password = config['mq_password']
     @report_queue = ENV["REPORT_QUEUE"] || ReportPayload.default_queue
     @task_queue = ENV["TASK_QUEUE"] || "/queue/#{@customer_machine}"
     @statistics_topic = ENV["STATISTICS_TOPIC"] || StatisticsPayload.default_topic
-    @mq_host_list = QueueConfig.read('mq_hosts').split(',')
+    @mq_host_list = config['mq_hosts'].split(',')
     @mq_hosts = create_hash(@mq_host_list.dup)
     @stats = DomtrixStats::StatsProcessor.new(@customer_machine)
     @stats.static_info = YAML::load(ENV["STATIC_INFO"].to_s) || @stats.static_info

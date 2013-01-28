@@ -30,5 +30,5 @@ config = {
 config['ftp_login'] = ARGV[3] if ARGV[3]
 config['ftp_password'] = ARGV[4] if ARGV[4]
 
-QueueConfig.write(config,0600)
+QueueConfig.instance.write(config,0600)
 exit

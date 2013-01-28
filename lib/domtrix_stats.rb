@@ -4,6 +4,7 @@
 #  Author: Neil Wilson
 
 require 'yaml'
+require 'set'
 module DomtrixStats
   %w(
     triggerable

@@ -15,6 +15,7 @@ require 'domtrix_worker'
 
 # Command redirector table
 app = WorkerManager.new(
-  'configure' => MysConfigureCommand
+  'configure' => MysConfigureCommand,
+  'snapshot' => MysSnapshotCommand
 )
 app.run
