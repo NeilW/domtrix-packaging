@@ -1,3 +1,9 @@
+domtrix (0.0.6-0ubuntu1) precise; urgency=low
+
+  * New Upstream code base
+
+ -- Neil Wilson <neil@aldur.co.uk>  Tue, 29 Jan 2013 16:59:58 +0000
+
 domtrix (0.0.5-0ubuntu1) precise; urgency=low
 
   * New Upstream code base
