@@ -1,8 +1,8 @@
 #! /usr/bin/ruby1.8
-#    Brightbox - Snapshot a database
-#    Copyright (C) 2013 Brightbox Systems
+#    Brightbox - Restore a database image
+#    Copyright (C) 2010 Brightbox Systems
 #    Author: Neil Wilson
-
+#
 
 begin
   require "domtrix_queue"
@@ -12,16 +12,16 @@ rescue LoadError
 end
 
 unless ARGV.length == 2
-  abort "Usage: #{File.basename $0} queue-name target-uri"
+  abort "Usage: #{File.basename $0} queue-name source-uri"
 end
 
 HOST = ARGV.shift
-TARGET_URI = ARGV.shift
+SOURCE_URI = ARGV.shift
 
 queue = DomtrixQueue.new(HOST)
 queue.execute(
-  'snapshot',
-  {:uri => TARGET_URI},
-  "Snapshotting MySQL database to #{TARGET_URI}"
+  'restore',
+  {:uri => SOURCE_URI},
+  "Restoring MySQL database from #{SOURCE_URI}"
   )
 exit

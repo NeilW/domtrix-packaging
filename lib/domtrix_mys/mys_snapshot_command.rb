@@ -1,63 +1,32 @@
 #!/usr/bin/env ruby
 #    Brightbox - Command processor classes
-#    Copyright (C) 2010, Neil Wilson, Brightbox Systems
+#    Copyright (C) 2013, Neil Wilson, Brightbox Systems
 #
-#  Load Balancer Configure command.
+#  Mysql Snapshot command
 
 class MysSnapshotCommand < DataCommand
+
+private
   
   include RootPrivileges
   include DomtrixConfig
   include CommandRunner
-
-private
-
-  def target_uri_name
-    @targeturi ||= URI(@data[:targeturi])
-    add_ftp_credentials(@targeturi) if missing_ftp_credentials?(@targeturi)
-    @targeturi
-  rescue URI::InvalidURIError
-    raise "Invalid Target URI: #{target_uri_display_name}"
-  end
-
-  def target_uri_display_name
-    if @target_vol
-      @target_vol.display_uri
-    else
-      strip_credentials(@targeturi) if @targeturi
-    end
-  end
-
-  def required_elements_present?
-    target_uri_name
-  end
-
-  def strip_credentials(uri_ref)
-    local_uri = uri_ref.dup
-    local_uri.user = nil
-    local_uri.password = nil
-    local_uri.to_s
-  end
-
-  def missing_ftp_credentials?(uri_name)
-    uri_name.scheme == 'ftp' && uri_name.user.nil?
-  end
-
-  def add_ftp_credentials(uri_name)
-    uri_name.user = config['ftp_login']
-    uri_name.password = config['ftp_password']
-  end
+  include MysUriCommon
 
   def backup_script
     <<-END
 #!/bin/sh
 logger -t db-snapshot "Snapshotting MySQL database to #{target_uri_display_name}"
-tar -C /var/cache/mylvmbackup/mnt -cz backup backup-pos | curl -s -T - --ftp-create-dirs "#{target_uri_name}"
+tar --create --one-file-system --sparse --gzip --directory /var/cache/mylvmbackup/mnt/backup . --directory .. backup-pos | curl --silent --show-error --upload-file - --ftp-create-dirs "#{target_uri_name}"
   END
   end
 
   def mylvmbackup_command(hook_dir)
     "mylvmbackup --log_method=syslog --xfs --backuptype=none --innodb_recover --skip_flush_tables --thin --hooksdir=#{hook_dir}"
+  end
+
+  def snapshot_check_command
+    "curl --silent --show-error --head #{target_uri_name}"
   end
 
   def run_snapshot
@@ -69,8 +38,9 @@ tar -C /var/cache/mylvmbackup/mnt -cz backup backup-pos | curl -s -T - --ftp-cre
       ) do |f|
         f.puts backup_script
       end
-      run(mylvmbackup_command(dir), "MySQL snapshot complete")
+      run(mylvmbackup_command(dir), "MySQL snapshot complete", "failed to snapshot database to #{target_uri_display_name}")
     end
+    run(snapshot_check_command, "Checked snapshot exists", "snapshot has not been created at #{target_uri_display_name}")
   end
 
   def data_action

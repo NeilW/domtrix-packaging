@@ -5,11 +5,11 @@
 #  Load Balancer Configure command.
 
 class MysConfigureCommand < DataCommand
+
+private
   
   include RootPrivileges
   include CommandRunner
-
-private
 
   def required_elements_present?
     admin_password
