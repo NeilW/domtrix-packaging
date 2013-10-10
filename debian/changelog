@@ -1,3 +1,10 @@
+domtrix (0.0.7-0ubuntu1) raring; urgency=low
+
+  * New Upstream code base
+  * domtrix-lb-worker: Add ssl support
+
+ -- Neil Wilson <neil@aldur.co.uk>  Thu, 10 Oct 2013 13:48:34 +0100
+
 domtrix (0.0.6-0ubuntu1) precise; urgency=low
 
   * New Upstream code base
