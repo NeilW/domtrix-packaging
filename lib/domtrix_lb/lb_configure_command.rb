@@ -24,7 +24,7 @@ private
   end
 
   def config
-    if @data.kind_of(Hash)
+    if @data.kind_of?(Hash)
       @data[:config]
     else
       @data
