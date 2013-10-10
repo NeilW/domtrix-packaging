@@ -3,7 +3,7 @@
 #    Copyright (C) 2010 Brightbox Systems
 #    Author: Neil Wilson
 #
-#  dom-lb-configure queue-name json-config
+#  dom-lb-configure queue-name haproxy-config [ssl-cert]
 
 
 begin
@@ -12,22 +12,22 @@ rescue LoadError
   require File.join(File.dirname(__FILE__),'..', 'relative-env')
   retry
 end
-require 'domtrix_lb_config'
 
-if ARGV.length.zero?
-  abort "Usage: #{File.basename $0} queue-name [json-config-file]"
+unless (2..3).include?(ARGV.length) 
+  abort "Usage: #{File.basename $0} queue-name haproxy-config [ssl-cert]"
 end
 
-DEFAULT_DATADIR = '/usr/share/domtrix-lb/'
-HOST = ARGV.shift
-TEMPLATE = File.join(ENV['DATADIR'] || DEFAULT_DATADIR, 'templates/haproxy.cfg.erb')
+LB_QUEUE = ARGV.shift
+CONFIG = ARGV.shift
+CERT = ARGV.shift
 
-lbconfig = LoadBalancerConfig.new(ARGF.read, File.read(TEMPLATE))
+data_hash = {:config => File.read(CONFIG)}
+data_hash[:pem] = File.read(CERT) if CERT
 
-queue = DomtrixQueue.new(HOST)
+queue = DomtrixQueue.new(LB_QUEUE)
 queue.execute(
   'configure',
-  lbconfig.haproxy_config,
-  "Configuring load-balancer #{lbconfig.lb_id}"
+  data_hash,
+  "Configuring load-balancer #{LB_QUEUE}"
   )
 exit
