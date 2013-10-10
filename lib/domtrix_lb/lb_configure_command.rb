@@ -12,8 +12,27 @@ class LbConfigureCommand < DataCommand
 private
 
   def valid_data?
-    @data &&
-    !@data.empty?
+    super || valid_string?
+  end
+
+  def valid_string?
+    (@data && @data.kind_of?(String) && !@data.empty?)
+  end
+
+  def required_elements_present?
+    config
+  end
+
+  def config
+    if @data.kind_of?(Hash)
+      @data[:config]
+    else
+      @data
+    end
+  end
+
+  def certificate
+    @data.kind_of?(Hash) && @data[:pem]
   end
 
   def haproxy_enabled?
@@ -23,7 +42,15 @@ private
   def write_haproxy_config
     Syslog.debug "Updating haproxy config"
     File.open("/etc/haproxy/haproxy.cfg", "w") do |f|
-      f.write @data
+      f.write config
+    end
+    Syslog.debug "Updated."
+  end
+
+  def write_haproxy_certificate
+    Syslog.debug "Updating haproxy certificate"
+    File.open("/etc/haproxy/ssl_cert.pem", "w") do |f|
+      f.write certificate
     end
     Syslog.debug "Updated."
   end
@@ -47,7 +74,8 @@ private
   end
 
   def data_action
-    write_haproxy_config
+    write_haproxy_config if config
+    write_haproxy_certificate if certificate
     if haproxy_enabled?
       restart_haproxy
     else
