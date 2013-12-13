@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+#    Brightbox - Machine Message consumer 
+#    Copyright (C) 2010, Brightbox Systems
+#    Author: Neil Wilson
+#
+#  Listen on a queue and handle load balancer configure requests
+
+begin
+  require 'domtrix_config'
+rescue LoadError
+  require File.join(File.dirname(__FILE__),'..', 'relative-env')
+  retry
+end
+
+case QueueConfig.instance['service_type']
+  when 'lb' 
+    require 'domtrix_lb'
+    command_hash = { 
+      'configure' => LbConfigureCommand
+    }
+  when 'mys'
+    require 'domtrix_mys'
+    command_hash = {
+      'configure' => MysConfigureCommand,
+      'snapshot' => MysSnapshotCommand,
+      'restore' => MysRestoreCommand
+    }
+  else
+    abort "Unsupported or missing service type"
+end
+
+require 'domtrix_worker'
+
+# Command redirector table
+app = WorkerManager.new(command_hash)
+app.run
