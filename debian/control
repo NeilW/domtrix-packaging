@@ -4,14 +4,14 @@ Priority: extra
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Neil Wilson <neil@aldur.co.uk>
 Build-Depends: debhelper (>= 7.0.50~), gem2deb (>= 0.2.6~)
-Standards-version: 3.9.2
+Standards-version: 3.9.5
 Homepage: http://github.com/NeilW/domtrix-packaging
 XS-Ruby-Versions: all
 
 Package: domtrix-lb
 Architecture: all
 XB-Ruby-Versions: ${ruby:Versions}
-Depends: ${shlibs:Depends}, ${misc:Depends}, ruby | ruby-interpreter, ruby-json, ruby-stomp
+Depends: ${shlibs:Depends}, ${misc:Depends}, puppet-git-receiver, ruby | ruby-interpreter, ruby-json, ruby-stomp
 Provides: libdomtrix-core-ruby, libdomtrix-core-ruby1.8
 Replaces: libdomtrix-core-ruby(<< 0.0.3-0ubuntu3), libdomtrix-core-ruby1.8 (<< 0.0.3-0ubuntu3)
 Breaks: libdomtrix-core-ruby(<< 0.0.3-0ubuntu3), libdomtrix-core-ruby1.8 (<< 0.0.3-0ubuntu3)
@@ -19,7 +19,7 @@ Description: domtrix worker package for services
  Domtrix provides a Stomp based message queue consumer system for managing
  virtual machines.
  .
- This worker manages load balancer images based on haproxy and MySQL images
+ This worker generates service images based on haproxy and MySQL images
 
 Package: libdomtrix-core-ruby
 Section: oldlibs
