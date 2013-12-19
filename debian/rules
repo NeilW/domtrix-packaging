@@ -16,4 +16,4 @@
 
 override_dh_install:
 	dh_install
-	mv -v debian/domtrix-lb/usr/bin/create-*-service debian/domtrix-lb/usr/bin/dom-create-config debian/domtrix-lb/usr/bin/domtrix-*-worker debian/domtrix-lb/usr/sbin
+	mv -v debian/domtrix-lb/usr/bin/create-*-service debian/domtrix-lb/usr/bin/dom-*-config debian/domtrix-lb/usr/bin/domtrix-*-worker debian/domtrix-lb/usr/sbin

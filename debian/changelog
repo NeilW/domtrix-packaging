@@ -1,7 +1,8 @@
-domtrix (0.0.8-0ubuntu1) trusty; urgency=low
+domtrix (0.0.8-0ubuntu1) UNRELEASED; urgency=low
 
   * New Upstream code base
   * domtrix-service-worker: unified worker for puppet
+  * dom-puppet-config: config for puppet
   * Add dependency on puppet-git-receiver
   * Update standards version to 3.9.5
   * Update package description 
