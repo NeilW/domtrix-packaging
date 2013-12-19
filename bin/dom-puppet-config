@@ -1,0 +1,50 @@
+#!/bin/sh
+set -e
+
+HIERA_FILE=/etc/brightbox/hiera/initial.yaml
+
+fail() {
+  echo "$@" >&2
+  exit 1
+}
+
+list_classes() {
+  local service="$1"
+  case ${service} in
+    lb)
+      echo "- haproxy"
+      ;;
+    mys)
+      echo "- mys_service"
+      ;;
+    *)
+      fail "Unknown service ${service}"
+      ;;
+  esac
+}
+
+generate_hiera_config() {
+  local service_type="$1"
+  local queue_name="$2"
+  local mq_login="$3"
+  local mq_password="$4"
+  local mq_hosts="$5"
+  local class_list
+  class_list=$(list_classes ${service_type})
+  mkdir -p $(dirname "${HIERA_FILE}")
+  cat >"${HIERA_FILE}" <<-END 
+---
+classes:
+- domtrix
+${class_list}
+domtrix::mquser: ${mq_login}
+domtrix::mqpassword: ${mq_password}
+domtrix::mqhosts: ${mq_hosts}
+domtrix::queue: ${queue_name}
+domtrix::service: ${service_type}
+END
+}
+
+[ "$#" -eq 5 ] ||
+  fail "Usage: $(basename $0) <service> <queue> <login> <password> <hosts>"
+generate_hiera_config "$@"
