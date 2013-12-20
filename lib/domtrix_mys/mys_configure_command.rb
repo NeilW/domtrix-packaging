@@ -21,13 +21,13 @@ private
 
   def puppet_config_hash
     {
-      "admin_password" => admin_password
+      "mys_service::admin_password" => admin_password
     }
   end
 
   def write_mysql_puppet_config
-    Syslog.debug "Updating Mysql config"
-    File.open("/etc/brightbox/mysql-system/config.yaml",
+    Syslog.debug "Updating Mysql hiera runtime config"
+    File.open("/etc/brightbox/hiera/runtime.yaml",
       File::CREAT|File::TRUNC|File::WRONLY, 0600) do |f|
       YAML.dump(puppet_config_hash, f)
     end
@@ -36,8 +36,8 @@ private
 
   def start_puppet_run
     Syslog.debug "Starting MySQL puppet reconfigure"
-    run("start brightbox-mysql-system", "Failed to complete puppet run")
-    Syslog.debug "Started"
+    run("puppet-git-reapply", "Puppet manifests reapplied", "Puppet run failure")
+    Syslog.debug "Completed"
   end
 
   def data_action
