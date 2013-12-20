@@ -7,6 +7,7 @@ domtrix (0.0.9-0ubuntu1) UNRELEASED; urgency=low
   * Update standards version to 3.9.5
   * Update package description 
   * Use puppet-git-reapply in mys configure
+  * Make admin password optional
 
  -- Neil Wilson <neil@aldur.co.uk>  Fri, 20 Dec 2013 16:34:04 +0000
 
