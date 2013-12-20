@@ -12,7 +12,7 @@ private
   include CommandRunner
 
   def required_elements_present?
-    admin_password
+    true
   end
 
   def admin_password
@@ -41,7 +41,7 @@ private
   end
 
   def data_action
-    write_mysql_puppet_config
+    write_mysql_puppet_config if admin_password
     start_puppet_run
     @state="completed"
   end
