@@ -111,7 +111,12 @@ private
 
   def create_hash (host_list)
     host_list.collect! do |host|
-      {:host => host, :login => @mq_login, :passcode => @mq_password}
+      {
+        :host => host,
+        :login => @mq_login,
+        :passcode => @mq_password,
+        :port => Stomp::Connection::default_port(false)
+      }
     end
   end
 
