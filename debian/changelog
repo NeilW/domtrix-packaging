@@ -1,4 +1,4 @@
-domtrix (0.0.9-0ubuntu1) UNRELEASED; urgency=low
+domtrix (0.0.10-0ubuntu1) UNRELEASED; urgency=low
 
   * New Upstream code base
   * domtrix-service-worker: unified worker for puppet
@@ -8,8 +8,9 @@ domtrix (0.0.9-0ubuntu1) UNRELEASED; urgency=low
   * Update package description 
   * Use puppet-git-reapply in mys configure
   * Make admin password optional
+  * Make Stomp Ports explict
 
- -- Neil Wilson <neil@aldur.co.uk>  Fri, 20 Dec 2013 16:34:04 +0000
+ -- Neil Wilson <neil@aldur.co.uk>  Mon, 30 Dec 2013 12:39:48 +0000
 
 domtrix (0.0.7-0ubuntu1) raring; urgency=low
 
