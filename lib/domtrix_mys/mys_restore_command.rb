@@ -13,13 +13,36 @@ private
   include CommandRunner
   include MysUriCommon
 
+  def data_area
+    "/var/lib/mysql"
+  end
+
   def mys_restore_command
-    "curl --silent --show-error #{target_uri_name} | tar --extract --gzip --directory /var/lib/mysql ."
+    "curl --silent --show-error #{target_uri_name} | tar --extract --gzip --directory #{data_area} ."
+  end
+
+  def service_running_command
+    "status mysql 2>/dev/null | grep -q running"
+  end
+
+  def stop_service_command
+    "stop --quiet mysql"
+  end
+
+  def zero_data_area
+    Syslog.info("#{self.class.name}: Zeroing MySQL data area - #{data_area}")
+    FileUtils.rm_r(Dir[File.join(data_area, '*')])
+  rescue SystemCallError => e
+    raise RuntimeError, "Failed to zero data area: #{e.message}"
   end
 
   def run_restore
     Syslog.debug "Running restoration process"
-    run(mys_restore_command, "MySQL restore complete", "failed to restore database from #{target_uri_display_name}")
+    if system(service_running_command)
+      run(stop_service_command, "stopped MySQL service", "failed to stop MySQL service")
+    end
+    zero_data_area
+    run(mys_restore_command, "restored MySQL data area", "failed to restore database from #{target_uri_display_name}")
   end
 
   def data_action
