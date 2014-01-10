@@ -1,4 +1,4 @@
-domtrix (0.0.10-0ubuntu1) UNRELEASED; urgency=low
+domtrix (0.0.11-0ubuntu1) UNRELEASED; urgency=low
 
   * New Upstream code base
   * domtrix-service-worker: unified worker for puppet
@@ -6,9 +6,10 @@ domtrix (0.0.10-0ubuntu1) UNRELEASED; urgency=low
   * Add dependency on puppet-git-receiver
   * Update standards version to 3.9.5
   * Update package description 
-  * Use puppet-git-reapply in mys configure
+  * mys_configure: Use puppet-git-reapply
   * Make admin password optional
-  * Make Stomp Ports explict
+  * Make Stomp ports explict
+  * mys_restore: Stop mysql and clear data area before restore
 
  -- Neil Wilson <neil@aldur.co.uk>  Mon, 30 Dec 2013 12:39:48 +0000
 
