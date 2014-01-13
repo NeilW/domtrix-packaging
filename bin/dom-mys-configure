@@ -1,4 +1,4 @@
-#! /usr/bin/ruby1.8
+#!/usr/bin/env ruby
 #    Brightbox - Configure a load balancer image
 #    Copyright (C) 2010 Brightbox Systems
 #    Author: Neil Wilson
@@ -12,18 +12,43 @@ rescue LoadError
   require File.join(File.dirname(__FILE__),'..', 'relative-env')
   retry
 end
+require 'optparse'
 
-unless ARGV.length == 2
-  abort "Usage: #{File.basename $0} queue-name admin_password"
+options = {}
+
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename $0} [options] queue-name"
+  opts.separator ""
+  opts.separator "Options:"
+  opts.on('-p', '--admin-password PASSWORD', "Password for admin user") do |pwd|
+    options[:admin_password] = pwd
+  end
+  opts.on('-f', '--ftp-user FTPUSER', "Name of ftp user") do |ftp_id|
+    options[:ftp_user] = ftp_id
+  end
+  opts.on('-w', '--ftp-password FTPPASSWORD', "Password for ftp user") do |pwd|
+    options[:ftp_password] = pwd
+  end
+  opts.on('-u', '--update', "Update puppet git archive") do
+    options[:update] = true
+  end
+  opts.on('-h', '--help', 'Display this screen') do
+    abort opts.to_s
+  end
+end
+
+optparse.parse!
+
+unless ARGV.length == 1
+  abort optparse.to_s
 end
 
 HOST = ARGV.shift
-ADMIN_PASSWORD = ARGV.shift
 
 queue = DomtrixQueue.new(HOST)
 queue.execute(
   'configure',
-  {:admin_password => ADMIN_PASSWORD},
+  options,
   "Configuring MySQL service"
   )
 exit

@@ -66,7 +66,7 @@ private
 
   def start_puppet_run
     Syslog.debug "Starting MySQL puppet reconfigure"
-    run("puppet-git-reapply #{update_flag}", "Puppet manifests reapplied #{update_flag}", "Puppet run failure")
+    run("setsid puppet-git-reapply #{update_flag}", "Puppet manifests reapplied #{update_flag}", "Puppet run failure")
     Syslog.debug "Completed"
   end
 
