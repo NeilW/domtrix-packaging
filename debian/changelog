@@ -1,4 +1,4 @@
-domtrix (0.0.12-0ubuntu1) UNRELEASED; urgency=low
+domtrix (0.0.13-0ubuntu1) UNRELEASED; urgency=low
 
   * New Upstream code base
   * domtrix-service-worker: unified worker for puppet
@@ -11,6 +11,7 @@ domtrix (0.0.12-0ubuntu1) UNRELEASED; urgency=low
   * Make Stomp ports explict
   * mys_restore: Stop mysql and clear data area before restore
   * mys_configure: Add ftp, admin and recipe update support
+  * dom-mys-configure: Support addition configure options
 
  -- Neil Wilson <neil@aldur.co.uk>  Mon, 30 Dec 2013 12:39:48 +0000
 
