@@ -24,8 +24,10 @@ class WorkerManager
     Syslog.open("#{File.basename($0)}(#{@customer_machine})", Syslog::LOG_PID)
     if ENV['DEBUG']
       Syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
+      Syslog.info("WorkerManager logging at Debug level")
     else
       Syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_INFO)
+      Syslog.info("WorkerManager logging at Info level")
     end
     if @customer_machine.to_s.empty?
       Syslog.err("WorkerManager: #{File.basename $0}: No target details given - aborting")
@@ -85,10 +87,11 @@ class WorkerManager
     Syslog.debug("WorkerManager: Completed termination statistics")
     Syslog.debug("WorkerManager: Waiting for listener to complete")
     synchronize do
-      Syslog.debug("WorkerManager: Listener thread complete")
+      Syslog.debug("WorkerManager: Disconnector in Critical Section")
       @client.close
-      Syslog.info("WorkerManager: Disconnected - exiting")
+      Syslog.info("WorkerManager: Disconnected - Exiting")
     end
+    Syslog.debug("WorkerManager: exited")
   ensure
     Syslog.close
   end
@@ -165,7 +168,7 @@ private
       Syslog.info "WorkerManager: Message acknowledged"
       command.statistics_frequency = statistics_frequency
       synchronize do
-      	Syslog.debug("WorkerManager: Enter Critical Section")
+      	Syslog.debug("WorkerManager: Listener in Critical Section")
 	command.action do |resource, stats, queue |
 	  topic = if queue then "/topic/#{queue}" else @statistics_topic end
 	  publish_statistics(topic, resource, stats)
@@ -182,7 +185,7 @@ private
 	  @client.unsubscribe(@task_queue)
 	  Syslog.debug("WorkerManager: Terminating - Unsubscribed from #{@task_queue}")
 	end
-	Syslog.debug("WorkerManager: Exit Critical Section")
+	Syslog.debug("WorkerManager: Listener outside Critical Section")
       end
     end
   end
