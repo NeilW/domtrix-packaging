@@ -15,6 +15,16 @@ end
 require 'optparse'
 
 options = {}
+DAYS = %w[Sunday Monday Tuesday Wednesday Thursday Friday Saturday]
+DAY_ALIASES = {
+  'sun' => 'Sunday',
+  'mon' => 'Monday',
+  'tue' => 'Tuesday',
+  'wed' => 'Wednesday',
+  'thu' => 'Thursday',
+  'fri' => 'Friday',
+  'sat' => 'Saturday'
+}
 
 optparse = OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename $0} [options] queue-name"
@@ -26,13 +36,19 @@ optparse = OptionParser.new do |opts|
   opts.on('-f', '--ftp-user FTPUSER', "Name of ftp user") do |ftp_id|
     options[:ftp_user] = ftp_id
   end
-  opts.on('-w', '--ftp-password FTPPASSWORD', "Password for ftp user") do |pwd|
+  opts.on('-t', '--ftp-password FTPPASSWORD', "Password for ftp user") do |pwd|
     options[:ftp_password] = pwd
   end
   opts.on('-u', '--update', "Update puppet git archive") do
     options[:update] = true
   end
-  opts.on('-h', '--help', 'Display this screen') do
+  opts.on('-d', '--upgrade-weekday DAY', DAYS, DAY_ALIASES, 'Day of week for upgrades') do |day|
+    options[:upgrade_weekday] = day
+  end
+  opts.on('-h', '--upgrade-hour HOUR', ('0'..'23').to_a, 'Hour of day for upgrades') do |hour|
+    options[:upgrade_hour] = hour
+  end
+  opts.on('--help', 'Display this screen') do
     abort opts.to_s
   end
 end
