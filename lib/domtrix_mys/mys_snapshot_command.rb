@@ -47,12 +47,13 @@ tar --create --one-file-system --sparse --gzip --directory /var/cache/mylvmbacku
     Syslog.debug "Gathering filesystem statistics for #{data_area}"
     sql_stats = FileSystem.stat(data_area)
     @statistics = {
-      :size => ((sql_stats.blocks-sql_stats.blocks_free)*sql_stats.block_size/1048576.0).ceil
+      :snapshot_name => target_uri_name.path,
+      :db_size => ((sql_stats.blocks-sql_stats.blocks_free)*sql_stats.block_size/1048576.0).ceil
     }
   end
 
   def report_statistics
-    Syslog.info "Reporting snapshot size as #{@statistics[:size]}Mb"
+    Syslog.info "Reporting snapshot size as #{@statistics[:db_size]}Mb"
     @action_block.call(target, @statistics, nil)
   end
 
