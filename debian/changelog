@@ -1,4 +1,4 @@
-domtrix (0.0.15-0ubuntu1) UNRELEASED; urgency=low
+domtrix (0.0.16-0ubuntu1) UNRELEASED; urgency=low
 
   * New Upstream code base
   * domtrix-service-worker: unified worker for puppet
@@ -13,7 +13,7 @@ domtrix (0.0.15-0ubuntu1) UNRELEASED; urgency=low
   * mys_configure: Add ftp, admin and recipe update support
   * mys_configure: Add upgrade script support
   * dom-mys-configure: Support addition configure options
-  * mys_snapshot: Report size statistics
+  * mys_snapshot: Report size statistics and snapshot name 
 
  -- Neil Wilson <neil@aldur.co.uk>  Wed, 05 Feb 2014 11:55:36 +0000
 
