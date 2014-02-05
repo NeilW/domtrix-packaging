@@ -38,6 +38,14 @@ private
     @data[:ftp_password]
   end
 
+  def upgrade_weekday
+    @data[:upgrade_weekday]
+  end
+
+  def upgrade_hour
+    @data[:upgrade_hour]
+  end
+
   def update_flag
     if @data[:update]
       "--update"
@@ -52,6 +60,8 @@ private
     new_hash["domtrix::ftplogin"] = ftp_login if ftp_login
     new_hash["domtrix::ftppassword"] = ftp_password if ftp_password
     new_hash["domtrix::notify_service"] = 'no'
+    new_hash["basic_server::upgrade_hour"] = upgrade_hour if upgrade_hour
+    new_hash["basic_server::upgrade_weekday"] = upgrade_weekday if upgrade_weekday
     initial_yaml_hash.merge new_hash
   end
 
