@@ -10,6 +10,10 @@ module MysUriCommon
     @data[:uri]
   end
 
+  def data_area
+    "/var/lib/mysql"
+  end
+
   def target_uri_name
     @targeturi ||= URI(data_uri)
     add_ftp_credentials(@targeturi) if missing_ftp_credentials?(@targeturi)

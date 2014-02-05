@@ -43,8 +43,23 @@ tar --create --one-file-system --sparse --gzip --directory /var/cache/mylvmbacku
     run(snapshot_check_command, "Checked snapshot exists", "snapshot has not been created at #{target_uri_display_name}")
   end
 
+  def gather_statistics
+    Syslog.debug "Gathering filesystem statistics for #{data_area}"
+    sql_stats = FileSystem.stat(data_area)
+    @statistics = {
+      :size => ((sql_stats.blocks-sql_stats.blocks_free)*sql_stats.block_size/1048576.0).ceil
+    }
+  end
+
+  def report_statistics
+    Syslog.info "Reporting snapshot size as #{@statistics[:size]}Mb"
+    @action_block.call(target, @statistics, nil)
+  end
+
   def data_action
+    gather_statistics
     run_snapshot
+    report_statistics
     @state="completed"
   end
 

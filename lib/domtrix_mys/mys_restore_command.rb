@@ -13,10 +13,6 @@ private
   include CommandRunner
   include MysUriCommon
 
-  def data_area
-    "/var/lib/mysql"
-  end
-
   def mys_restore_command
     "curl --silent --show-error #{target_uri_name} | tar --extract --gzip --directory #{data_area} ."
   end
