@@ -1,4 +1,4 @@
-domtrix (0.0.16-0ubuntu1) UNRELEASED; urgency=low
+domtrix (0.0.17-0ubuntu1) UNRELEASED; urgency=low
 
   * New Upstream code base
   * domtrix-service-worker: unified worker for puppet
@@ -14,6 +14,7 @@ domtrix (0.0.16-0ubuntu1) UNRELEASED; urgency=low
   * mys_configure: Add upgrade script support
   * dom-mys-configure: Support addition configure options
   * mys_snapshot: Report size statistics and snapshot name 
+  * mys_snapshot: Exclude tagged directories from backup
 
  -- Neil Wilson <neil@aldur.co.uk>  Wed, 05 Feb 2014 11:55:36 +0000
 
