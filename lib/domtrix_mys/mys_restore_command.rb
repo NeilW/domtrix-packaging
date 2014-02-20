@@ -25,9 +25,15 @@ private
     "stop --quiet mysql"
   end
 
+  def dot_dirs
+    %w[. ..].collect! {|x| File.join(data_area, x) }
+  end
+
   def zero_data_area
     Syslog.info("#{self.class.name}: Zeroing MySQL data area - #{data_area}")
-    FileUtils.rm_r(Dir[File.join(data_area, '*')])
+    FileUtils.rm_r(
+      Dir.glob(File.join(data_area, '*'), File::FNM_DOTMATCH) - dot_dirs
+    )
   rescue SystemCallError => e
     raise RuntimeError, "Failed to zero data area: #{e.message}"
   end
