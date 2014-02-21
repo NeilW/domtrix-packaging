@@ -17,16 +17,16 @@ private
     <<-END
 #!/bin/sh
 logger -t db-snapshot "Snapshotting MySQL database to #{target_uri_display_name}"
-tar --create --one-file-system --sparse --gzip --directory /var/cache/mylvmbackup/mnt/backup --exclude-caches-under . --directory .. backup-pos | curl --silent --show-error --upload-file - --ftp-create-dirs "#{target_uri_name}"
+nice tar --create --one-file-system --sparse --gzip --directory /var/cache/mylvmbackup/mnt/backup --exclude-caches-under . --directory .. backup-pos | curl --silent --show-error --upload-file - --ftp-create-dirs "#{target_uri_name}"
   END
   end
 
   def mylvmbackup_command(hook_dir)
-    "mylvmbackup --log_method=syslog --xfs --backuptype=none --innodb_recover --skip_flush_tables --thin --hooksdir=#{hook_dir}"
+    "nice mylvmbackup --log_method=syslog --xfs --backuptype=none --innodb_recover --skip_flush_tables --thin --hooksdir=#{hook_dir}"
   end
 
   def snapshot_check_command
-    "curl --silent --show-error --head #{target_uri_name}"
+    "nice curl --silent --show-error --head #{target_uri_name}"
   end
 
   def run_snapshot
@@ -57,7 +57,7 @@ tar --create --one-file-system --sparse --gzip --directory /var/cache/mylvmbacku
   end
 
   def temp_dir_size
-    `du --summarize --total --one-file-system --block-size=1M #{as_args(data_area_cachedirs)}`.split.at(-2).to_i
+    `nice du --summarize --total --one-file-system --block-size=1M #{as_args(data_area_cachedirs)}`.split.at(-2).to_i
   end
 
   def report_statistics
