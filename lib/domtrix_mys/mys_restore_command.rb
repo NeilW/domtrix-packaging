@@ -14,7 +14,7 @@ private
   include MysUriCommon
 
   def mys_restore_command
-    "nice curl --silent --show-error #{target_uri_name} | tar --extract --gzip --directory #{data_area} ."
+    "nice curl --silent --show-error #{target_uri_name} | tar --extract #{compression_tag} --directory #{data_area} ."
   end
 
   def service_running_command

@@ -14,6 +14,11 @@ module MysUriCommon
     "/var/lib/mysql"
   end
 
+  #Change this to select the tar compression protocol to use
+  def compression_tag
+    ""
+  end
+
   def dot_dirs
     %w[. ..].collect! {|x| File.join(data_area, x) }
   end
