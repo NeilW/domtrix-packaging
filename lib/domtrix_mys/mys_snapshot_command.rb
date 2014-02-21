@@ -17,16 +17,16 @@ private
     <<-END
 #!/bin/sh
 logger -t db-snapshot "Snapshotting MySQL database to #{target_uri_display_name}"
-tar --create --one-file-system --sparse --gzip --directory /var/cache/mylvmbackup/mnt/backup --exclude-caches-under . --directory .. backup-pos | curl --silent --show-error --upload-file - --ftp-create-dirs "#{target_uri_name}"
+nice tar --create --one-file-system --sparse #{compression_tag} --directory /var/cache/mylvmbackup/mnt/backup --exclude-caches-under . --directory .. backup-pos | curl --silent --show-error --upload-file - --ftp-create-dirs "#{target_uri_name}"
   END
   end
 
   def mylvmbackup_command(hook_dir)
-    "mylvmbackup --log_method=syslog --xfs --backuptype=none --innodb_recover --skip_flush_tables --thin --hooksdir=#{hook_dir}"
+    "nice mylvmbackup --log_method=syslog --xfs --backuptype=none --innodb_recover --skip_flush_tables --thin --hooksdir=#{hook_dir}"
   end
 
   def snapshot_check_command
-    "curl --silent --show-error --head #{target_uri_name}"
+    "nice curl --silent --show-error --head #{target_uri_name}"
   end
 
   def run_snapshot
@@ -48,8 +48,16 @@ tar --create --one-file-system --sparse --gzip --directory /var/cache/mylvmbacku
     sql_stats = FileSystem.stat(data_area)
     @statistics = {
       :snapshot_name => target_uri_name.path,
-      :db_size => ((sql_stats.blocks-sql_stats.blocks_free)*sql_stats.block_size/1048576.0).ceil
+      :db_size => ((sql_stats.blocks-sql_stats.blocks_free)*sql_stats.block_size/1048576.0).ceil - temp_dir_size
     }
+  end
+
+  def as_args(str_array)
+    str_array && !str_array.empty? && "'#{str_array.join("' '")}'"
+  end
+
+  def temp_dir_size
+    `nice du --summarize --total --one-file-system --block-size=1M #{as_args(data_area_cachedirs)}`.split.at(-2).to_i
   end
 
   def report_statistics

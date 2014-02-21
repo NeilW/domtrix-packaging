@@ -14,7 +14,7 @@ private
   include MysUriCommon
 
   def mys_restore_command
-    "curl --silent --show-error #{target_uri_name} | tar --extract --gzip --directory #{data_area} ."
+    "nice curl --silent --show-error #{target_uri_name} | tar --extract #{compression_tag} --directory #{data_area} ."
   end
 
   def service_running_command
@@ -25,15 +25,9 @@ private
     "stop --quiet mysql"
   end
 
-  def dot_dirs
-    %w[. ..].collect! {|x| File.join(data_area, x) }
-  end
-
   def zero_data_area
     Syslog.info("#{self.class.name}: Zeroing MySQL data area - #{data_area}")
-    FileUtils.rm_r(
-      Dir.glob(File.join(data_area, '*'), File::FNM_DOTMATCH) - dot_dirs
-    )
+    FileUtils.rm_r(data_area_file_list)
   rescue SystemCallError => e
     raise RuntimeError, "Failed to zero data area: #{e.message}"
   end
