@@ -14,6 +14,22 @@ module MysUriCommon
     "/var/lib/mysql"
   end
 
+  def dot_dirs
+    %w[. ..].collect! {|x| File.join(data_area, x) }
+  end
+
+  def data_area_file_list
+    Dir.glob(File.join(data_area, '*'), File::FNM_DOTMATCH) - dot_dirs
+  end
+
+  def data_area_cachedirs
+    data_area_file_list.find_all do |d|
+      filename=File.join(d, 'CACHEDIR.TAG')
+      File.file?(filename) &&
+        File.read(filename, 43) == 'Signature: 8a477f597d28d172789f06886806bc55'
+    end
+  end
+
   def target_uri_name
     @targeturi ||= URI(data_uri)
     add_ftp_credentials(@targeturi) if missing_ftp_credentials?(@targeturi)

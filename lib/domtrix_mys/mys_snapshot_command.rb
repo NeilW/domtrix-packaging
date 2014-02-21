@@ -48,8 +48,16 @@ tar --create --one-file-system --sparse --gzip --directory /var/cache/mylvmbacku
     sql_stats = FileSystem.stat(data_area)
     @statistics = {
       :snapshot_name => target_uri_name.path,
-      :db_size => ((sql_stats.blocks-sql_stats.blocks_free)*sql_stats.block_size/1048576.0).ceil
+      :db_size => ((sql_stats.blocks-sql_stats.blocks_free)*sql_stats.block_size/1048576.0).ceil - temp_dir_size
     }
+  end
+
+  def as_args(str_array)
+    str_array && !str_array.empty? && "'#{str_array.join("' '")}'"
+  end
+
+  def temp_dir_size
+    `du --summarize --total --one-file-system --block-size=1M #{as_args(data_area_cachedirs)}`.split.at(-2).to_i
   end
 
   def report_statistics
