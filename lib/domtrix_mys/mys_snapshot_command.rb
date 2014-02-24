@@ -21,8 +21,9 @@ nice tar --create --one-file-system --sparse #{compression_tag} --directory /var
   END
   end
 
+  #All other options control by config file
   def mylvmbackup_command(hook_dir)
-    "nice mylvmbackup --log_method=syslog --xfs --backuptype=none --innodb_recover --skip_flush_tables --thin --hooksdir=#{hook_dir}"
+    "nice mylvmbackup --hooksdir=#{hook_dir}"
   end
 
   def snapshot_check_command
