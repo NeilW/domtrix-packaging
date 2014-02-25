@@ -21,8 +21,9 @@ nice tar --create --one-file-system --sparse #{compression_tag} --directory /var
   END
   end
 
+  #All other options control by config file
   def mylvmbackup_command(hook_dir)
-    "nice mylvmbackup --log_method=syslog --xfs --backuptype=none --innodb_recover --skip_flush_tables --thin --hooksdir=#{hook_dir}"
+    "nice mylvmbackup --hooksdir=#{hook_dir}"
   end
 
   def snapshot_check_command
@@ -45,10 +46,9 @@ nice tar --create --one-file-system --sparse #{compression_tag} --directory /var
 
   def gather_statistics
     Syslog.debug "Gathering filesystem statistics for #{data_area}"
-    sql_stats = FileSystem.stat(data_area)
     @statistics = {
       :snapshot_name => target_uri_name.path,
-      :db_size => ((sql_stats.blocks-sql_stats.blocks_free)*sql_stats.block_size/1048576.0).ceil - temp_dir_size
+      :db_size => database_file_size
     }
   end
 
@@ -56,8 +56,8 @@ nice tar --create --one-file-system --sparse #{compression_tag} --directory /var
     str_array && !str_array.empty? && "'#{str_array.join("' '")}'"
   end
 
-  def temp_dir_size
-    `nice du --summarize --total --one-file-system --block-size=1M #{as_args(data_area_cachedirs)}`.split.at(-2).to_i
+  def database_file_size
+    `nice du --summarize --total --one-file-system --block-size=1M #{as_args(data_area_normal_files)}`.split.at(-2).to_i
   end
 
   def report_statistics

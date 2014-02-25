@@ -27,12 +27,18 @@ module MysUriCommon
     Dir.glob(File.join(data_area, '*'), File::FNM_DOTMATCH) - dot_dirs
   end
 
+  def cache_dir?(d)
+    filename=File.join(d, 'CACHEDIR.TAG')
+    File.file?(filename) &&
+      File.read(filename, 43) == 'Signature: 8a477f597d28d172789f06886806bc55'
+  end
+
   def data_area_cachedirs
-    data_area_file_list.find_all do |d|
-      filename=File.join(d, 'CACHEDIR.TAG')
-      File.file?(filename) &&
-        File.read(filename, 43) == 'Signature: 8a477f597d28d172789f06886806bc55'
-    end
+    data_area_file_list.find_all { |d| cache_dir?(d) }
+  end
+
+  def data_area_normal_files
+    data_area_file_list.reject { |d| cache_dir?(d) }
   end
 
   def target_uri_name
