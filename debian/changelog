@@ -1,4 +1,4 @@
-domtrix (0.0.20-0ubuntu2) UNRELEASED; urgency=low
+domtrix (0.0.20-0ubuntu3) UNRELEASED; urgency=low
 
   * New Upstream code base
   * domtrix-service-worker: unified worker for puppet
