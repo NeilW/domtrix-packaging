@@ -1,4 +1,4 @@
-domtrix (0.0.20-0ubuntu1) UNRELEASED; urgency=low
+domtrix (0.0.20-0ubuntu2) UNRELEASED; urgency=low
 
   * New Upstream code base
   * domtrix-service-worker: unified worker for puppet
@@ -18,8 +18,9 @@ domtrix (0.0.20-0ubuntu1) UNRELEASED; urgency=low
   * mys_restore: clear data area dot dirs
   * Don't compress snapshot archives
   * mys_snapshot: Move option selection to mylvmbackup config file
+  * Update maintainer scripts to handle service worker
 
- -- Neil Wilson <neil@aldur.co.uk>  Wed, 05 Feb 2014 11:55:36 +0000
+ -- Neil Wilson <neil@aldur.co.uk>  Tue, 25 Feb 2014 16:46:37 +0000
 
 domtrix (0.0.7-0ubuntu1) raring; urgency=low
 

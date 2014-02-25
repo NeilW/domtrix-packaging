@@ -4,7 +4,7 @@
 set -e
 
 # Stop workers using domtrix
-magic_word="domtrix-(lb|mys)-worker"
+magic_word="domtrix-(lb|mys|service)-worker"
 job_list="$(grep -E -l "${magic_word}" /etc/init/*|sed 's|^/etc/init/\(.*\).conf$|\1|')"
 for job in ${job_list}
 do

@@ -9,8 +9,8 @@ service procps start || echo "Failed to reload sysctl files. KEEPALIVES will not
 case "$1" in
 	purge)
 		echo "Purging Upstart scripts"
-		magic_word="domtrix-(lb|mys)-worker"
-		grep -E -l "${magic_word}" | xargs rm -f
+		magic_word="domtrix-(lb|mys|service)-worker"
+		grep -E -l "${magic_word}" /etc/init/* | xargs rm -f
 		;;
 esac
 		
