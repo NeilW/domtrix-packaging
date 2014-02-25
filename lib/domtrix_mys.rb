@@ -5,7 +5,6 @@
 
 require 'tmpdir'
 require 'uri'
-require 'filesystem'
 require 'domtrix_core'
 require 'domtrix_config'
 %w(
