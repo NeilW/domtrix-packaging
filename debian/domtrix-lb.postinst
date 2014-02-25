@@ -11,6 +11,12 @@ magic_word="domtrix-(lb|mys|service)-worker"
 job_list=$(grep -E -l "${magic_word}" /etc/init/*|sed 's|^/etc/init/\(.*\).conf$|\1|')
 for job in ${job_list}
 do
+	#Belt and braces
+	if status ${job} | grep -q running
+	then
+	    echo "Stopping ${job}"
+	    stop ${job} || true
+	fi
 	echo "Starting ${job}"
 	start ${job} || true
 done
