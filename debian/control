@@ -11,7 +11,7 @@ XS-Ruby-Versions: all
 Package: domtrix-lb
 Architecture: all
 XB-Ruby-Versions: ${ruby:Versions}
-Depends: ${shlibs:Depends}, ${misc:Depends}, puppet-git-receiver, ruby | ruby-interpreter, ruby-json, ruby-stomp, ruby-filesystem
+Depends: ${shlibs:Depends}, ${misc:Depends}, puppet-git-receiver, ruby | ruby-interpreter, ruby-json, ruby-stomp
 Provides: libdomtrix-core-ruby, libdomtrix-core-ruby1.8
 Replaces: libdomtrix-core-ruby(<< 0.0.3-0ubuntu3), libdomtrix-core-ruby1.8 (<< 0.0.3-0ubuntu3)
 Breaks: libdomtrix-core-ruby(<< 0.0.3-0ubuntu3), libdomtrix-core-ruby1.8 (<< 0.0.3-0ubuntu3)

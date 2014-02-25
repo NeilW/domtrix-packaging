@@ -1,4 +1,4 @@
-domtrix (0.0.19-0ubuntu1) UNRELEASED; urgency=low
+domtrix (0.0.20-0ubuntu1) UNRELEASED; urgency=low
 
   * New Upstream code base
   * domtrix-service-worker: unified worker for puppet
@@ -17,6 +17,7 @@ domtrix (0.0.19-0ubuntu1) UNRELEASED; urgency=low
   * mys_snapshot: Exclude tagged directories from backup
   * mys_restore: clear data area dot dirs
   * Don't compress snapshot archives
+  * mys_snapshot: Move option selection to mylvmbackup config file
 
  -- Neil Wilson <neil@aldur.co.uk>  Wed, 05 Feb 2014 11:55:36 +0000
 
