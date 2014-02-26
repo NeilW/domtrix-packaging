@@ -3,14 +3,21 @@
 
 set -e
 
-# Stop workers using domtrix
-magic_word="domtrix-(lb|mys|service)-worker"
-job_list="$(grep -E -l "${magic_word}" /etc/init/*|sed 's|^/etc/init/\(.*\).conf$|\1|')"
-for job in ${job_list}
-do
-	echo "Stopping ${job}"
-	stop ${job} || true
-done
+# Upgrade restart bypass
+
+if [ "$1" = "upgrade" -a -f /etc/domtrix/norestart ]
+then
+    :
+else
+    # Stop workers using domtrix
+    magic_word="domtrix-(lb|mys|service)-worker"
+    job_list="$(grep -E -l "${magic_word}" /etc/init/*|sed 's|^/etc/init/\(.*\).conf$|\1|')"
+    for job in ${job_list}
+    do
+	    echo "Stopping ${job}"
+	    stop ${job} || true
+    done
+fi
 
 #DEBHELPER#
 
