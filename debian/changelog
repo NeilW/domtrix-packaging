@@ -8,7 +8,7 @@ domtrix (0.0.20-0ubuntu3) UNRELEASED; urgency=low
   * Update package description 
   * mys_configure: Use puppet-git-reapply
   * Make admin password optional
-  * Make Stomp ports explict
+  * Make Stomp ports explicit
   * mys_restore: Stop mysql and clear data area before restore
   * mys_configure: Add ftp, admin and recipe update support
   * mys_configure: Add upgrade script support
