@@ -1,4 +1,4 @@
-#! /usr/bin/ruby1.8
+#!/usr/bin/env ruby
 #    Brightbox - Snapshot a database
 #    Copyright (C) 2013 Brightbox Systems
 #    Author: Neil Wilson
@@ -11,17 +11,25 @@ rescue LoadError
   retry
 end
 
+require 'domtrix_auth_token'
+
+usage_args = 'queue-name target-uri'
+options = DomtrixAuthToken::options(usage_args)
+
 unless ARGV.length == 2
-  abort "Usage: #{File.basename $0} queue-name target-uri"
+  DomtrixAuthToken.bad_usage(usage_args)
 end
 
-HOST = ARGV.shift
-TARGET_URI = ARGV.shift
+HOST, TARGET_URI = *ARGV
+snap_commands = {
+  :uri => TARGET_URI
+}
+snap_commands[:auth_token] = options['auth_token'] if options['auth_token']
 
 queue = DomtrixQueue.new(HOST)
 queue.execute(
   'snapshot',
-  {:uri => TARGET_URI},
+  snap_commands,
   "Snapshotting MySQL database to #{TARGET_URI}"
   )
 exit

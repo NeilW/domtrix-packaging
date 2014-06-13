@@ -17,7 +17,7 @@ private
     <<-END
 #!/bin/sh
 logger -t db-snapshot "Snapshotting MySQL database to #{target_uri_display_name}"
-nice tar --create --one-file-system --sparse #{compression_tag} --directory /var/cache/mylvmbackup/mnt/backup --exclude-caches-under . --directory .. backup-pos | curl --silent --show-error --upload-file - --ftp-create-dirs "#{target_uri_name}"
+nice tar --create --one-file-system --sparse #{compression_tag} --directory /var/cache/mylvmbackup/mnt/backup --exclude-caches-under . --directory .. backup-pos | uri-cp #{token_details} file:///dev/stdin '#{target_uri_name}'
   END
   end
 
@@ -27,7 +27,7 @@ nice tar --create --one-file-system --sparse #{compression_tag} --directory /var
   end
 
   def snapshot_check_command
-    "nice curl --silent --show-error --head #{target_uri_name}"
+    "nice curl --silent --show-error --fail --head #{curl_token_option} '#{target_uri_name}'"
   end
 
   def run_snapshot

@@ -1,0 +1,37 @@
+#!/usr/bin/ruby
+#    Brightbox - Optimally copy one URI @to another
+#    Copyright (C) 2010, Brightbox Systems
+#    Author: Neil Wilson
+#
+#  Copy one URI @to another - expanding or deflating as requested
+
+begin
+  require "array_shuffle"
+rescue LoadError
+  require File.join(File.dirname(__FILE__),'..','relative-env')
+  retry
+end
+require 'domtrix_uricp'
+require 'optparse'
+
+def bad_usage(message)
+  Syslog.err message if Syslog.opened?
+  abort "#{File.basename $PROGRAM_NAME}: #{message}"
+end
+
+options = {}
+
+OptionParser.new do |o|
+  o.on('-a', '--auth AUTH_TOKEN',
+    'Use AUTH_TOKEN for non-local requests') do |token|
+    	options['auth_token'] = token
+  end
+  o.on_tail('-h', 'Print this help message') { puts o; exit }
+  o.parse!
+end
+
+ARGV.length == 2 || bad_usage("Required parameters are missing")
+app = UriCp.new(ARGV[0], ARGV[1], options)
+bad_usage(app.error) unless app.valid?
+app.run
+bad_usage(app.error) unless app.valid?

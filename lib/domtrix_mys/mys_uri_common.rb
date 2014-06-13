@@ -10,8 +10,16 @@ module MysUriCommon
     @data[:uri]
   end
 
+  def auth_token
+    @data[:auth_token]
+  end
+
   def data_area
     "/var/lib/mysql"
+  end
+
+  def headers
+    {'auth_token' => auth_token }
   end
 
   #Change this to select the tar compression protocol to use
@@ -42,16 +50,28 @@ module MysUriCommon
   end
 
   def target_uri_name
-    @targeturi ||= URI(data_uri)
-    add_ftp_credentials(@targeturi) if missing_ftp_credentials?(@targeturi)
-    @targeturi
+    @targeturi ||= DomtrixUri.new(data_uri, config, headers)
   rescue URI::InvalidURIError
     raise "Invalid URI: #{target_uri_display_name}"
   end
 
+  def current_token
+    target_uri_name.headers && target_uri_name.headers['auth_token']
+  end
+
+  def curl_token_option
+    token = current_token
+    "-H 'X-Auth-Token:#{token}'" if token
+  end
+
+  def token_details
+    token = current_token
+    "--auth '#{token}'" if token
+  end
+
   def target_uri_display_name
     if @targeturi
-      strip_credentials(@targeturi) 
+      @targeturi.display_uri_name
     else
       data_uri
     end
@@ -59,22 +79,6 @@ module MysUriCommon
 
   def required_elements_present?
     target_uri_name
-  end
-
-  def strip_credentials(uri_ref)
-    local_uri = uri_ref.dup
-    local_uri.user = nil
-    local_uri.password = nil
-    local_uri.to_s
-  end
-
-  def missing_ftp_credentials?(uri_name)
-    uri_name.scheme == 'ftp' && uri_name.user.nil?
-  end
-
-  def add_ftp_credentials(uri_name)
-    uri_name.user = config['ftp_login']
-    uri_name.password = config['ftp_password']
   end
 
 end

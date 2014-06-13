@@ -4,6 +4,7 @@
 #    Author: Neil Wilson
 #
 #  Module to detect and handle the difference between a libvirt and vlan host
+#  Encapsulate the workaround to handle the macvlan fault.
 
 module HostTypeDetector
 
@@ -15,18 +16,20 @@ module HostTypeDetector
 
   def detect_host_interface(bridge_name)
     if native_network_host?
-      HostInterface.new(bridge_name)
+#      NativeMacvlanInterface.new(bridge_name)
+      NativeBridgeInterface.new(bridge_name)
     else
-      BridgeInterface.new(bridge_name)
+      LibvirtBridgeInterface.new(bridge_name)
     end
   end
 
   def adjust_domain_xml_for_host_type(server_xml)
-    return if native_network_host? || ! vlan_network?(server_xml)
-    mac_address = server_xml.match(/address="([0-9a-fA-F:]{17})"/) && Regexp.last_match[1]
-    server_xml.sub!('direct', 'network')
-    server_xml.sub!(vlan_network_pattern, "<source network='#{bridgename mac_address}'")
-    server_xml.sub!('</interface>', '<filterref filter="dummy"/>\0')
+    return unless vlan_network?(server_xml)
+    if native_network_host?
+      NativeBridge.adjust_domain_xml(server_xml)
+    else
+      LibvirtBridge.adjust_domain_xml(server_xml)
+    end
   end
 
   def vlan_network?(server_xml)
@@ -37,7 +40,26 @@ private
   
   IPTABLES_FILE='/etc/sysconfig/iptables'
 
-  def vlan_network_pattern
-    /<source(?:\s+mode="bridge")?\s+dev="#{vlan_pattern}"(?:\s+mode="bridge")?/
+  module NativeBridge
+    extend DomtrixCommon
+    def self.adjust_domain_xml(server_xml)
+      mac_address = server_xml.match(mac_network_pattern) && Regexp.last_match[1]
+      server_xml.sub!('direct', 'bridge')
+      server_xml.sub!(vlan_network_pattern, "<source bridge='#{bridgename mac_address}'")
+    end
+
   end
+
+  module LibvirtBridge
+    extend DomtrixCommon
+    def self.adjust_domain_xml(server_xml)
+      mac_address = server_xml.match(mac_network_pattern) && Regexp.last_match[1]
+      server_xml.sub!('direct', 'network')
+      server_xml.sub!(vlan_network_pattern, "<source network='#{bridgename mac_address}'")
+      server_xml.sub!('</interface>', '<filterref filter="dummy"/>\0')
+      server_xml.sub!('io="native"','')
+      server_xml.sub!('ioeventfd="on"','')
+    end
+  end
+
 end

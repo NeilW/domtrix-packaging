@@ -32,8 +32,8 @@ class StatisticsPayload
     end
   end
 
-  def self.default_topic
-    "/topic/statistics"
+  def self.default_mq
+    "/queue/statistics"
   end
  
 end

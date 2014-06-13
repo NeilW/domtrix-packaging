@@ -24,10 +24,10 @@ class WorkerManager
     Syslog.open("#{File.basename($0)}(#{@customer_machine})", Syslog::LOG_PID)
     if ENV['DEBUG']
       Syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_DEBUG)
-      Syslog.info("WorkerManager logging at Debug level")
+      Syslog.info("#{self.class.name}: logging at Debug level")
     else
       Syslog.mask = Syslog::LOG_UPTO(Syslog::LOG_INFO)
-      Syslog.info("WorkerManager logging at Info level")
+      Syslog.info("#{self.class.name}: logging at Info level")
     end
     if @customer_machine.to_s.empty?
       Syslog.err("WorkerManager: #{File.basename $0}: No target details given - aborting")
@@ -41,7 +41,7 @@ class WorkerManager
     @mq_password = config['mq_password']
     @report_queue = ENV["REPORT_QUEUE"] || ReportPayload.default_queue
     @task_queue = ENV["TASK_QUEUE"] || "/queue/#{@customer_machine}"
-    @statistics_topic = ENV["STATISTICS_TOPIC"] || StatisticsPayload.default_topic
+    @statistics_mq = ENV["STATISTICS_MQ"] || StatisticsPayload.default_mq
     @mq_host_list = config['mq_hosts'].split(',')
     @mq_hosts = create_hash(@mq_host_list.dup)
     @stats = DomtrixStats::StatsProcessor.new(@customer_machine)
@@ -66,7 +66,7 @@ class WorkerManager
 
   def run_stats
     @stats.tick do |report_name, resource, statistics|
-      publish_statistics("/topic/#{report_name}", resource, statistics)
+      publish_statistics(report_name, resource, statistics)
     end
   end
 
@@ -87,11 +87,10 @@ class WorkerManager
     Syslog.debug("WorkerManager: Completed termination statistics")
     Syslog.debug("WorkerManager: Waiting for listener to complete")
     synchronize do
-      Syslog.debug("WorkerManager: Disconnector in Critical Section")
+      Syslog.debug("WorkerManager: Listener thread complete")
       @client.close
-      Syslog.info("WorkerManager: Disconnected - Exiting")
+      Syslog.info("WorkerManager: Disconnected - exiting")
     end
-    Syslog.debug("WorkerManager: exited")
   ensure
     Syslog.close
   end
@@ -100,11 +99,11 @@ class WorkerManager
     @msg.headers["reply-to"] || @report_queue
   end
 
-  def publish_statistics(topic = @statistics_topic, resource = nil, statistics = nil)
+  def publish_statistics(mq, resource = nil, statistics = nil)
     if resource
       Syslog.debug "WorkerManager: Reporting statistics for resource #{resource.to_s}"
       payload = StatisticsPayload.new(:queue => @customer_machine, :resource_id => resource, :statistics => statistics)
-      @client.publish(topic, payload.body, payload.headers)
+      @client.publish(mq||@statistics_mq, payload.body, payload.headers)
     else
       Syslog.err "WorkerManager: Statistics reported with no associated resource"
     end
@@ -117,8 +116,8 @@ private
       {
         :host => host,
         :login => @mq_login,
-        :passcode => @mq_password,
-        :port => Stomp::Connection::default_port(false)
+	:passcode => @mq_password,
+	:port => Stomp::Connection::default_port(false)
       }
     end
   end
@@ -168,10 +167,9 @@ private
       Syslog.info "WorkerManager: Message acknowledged"
       command.statistics_frequency = statistics_frequency
       synchronize do
-      	Syslog.debug("WorkerManager: Listener in Critical Section")
-	command.action do |resource, stats, queue |
-	  topic = if queue then "/topic/#{queue}" else @statistics_topic end
-	  publish_statistics(topic, resource, stats)
+	Syslog.debug("WorkerManager: Enter Critical Section")
+	command.action do |resource, stats, mq |
+	  publish_statistics(mq, resource, stats)
 	end
 	report command.state
 	if command.successful?
@@ -185,7 +183,7 @@ private
 	  @client.unsubscribe(@task_queue)
 	  Syslog.debug("WorkerManager: Terminating - Unsubscribed from #{@task_queue}")
 	end
-	Syslog.debug("WorkerManager: Listener outside Critical Section")
+	Syslog.debug("WorkerManager: Exit Critical Section")
       end
     end
   end
