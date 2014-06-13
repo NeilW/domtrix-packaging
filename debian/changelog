@@ -1,4 +1,4 @@
-domtrix (0.0.20-0ubuntu4) UNRELEASED; urgency=low
+domtrix (0.0.20-0ubuntu4) trusty; urgency=low
 
   * New Upstream code base
   * domtrix-service-worker: unified worker for puppet
@@ -21,7 +21,7 @@ domtrix (0.0.20-0ubuntu4) UNRELEASED; urgency=low
   * Update maintainer scripts to handle service worker
   * Add worker restart bypass facility
 
- -- Neil Wilson <neil@aldur.co.uk>  Wed, 26 Feb 2014 09:52:50 +0000
+ -- Neil Wilson <neil@aldur.co.uk>  Fri, 13 Jun 2014 10:40:34 +0100
 
 domtrix (0.0.7-0ubuntu1) raring; urgency=low
 
