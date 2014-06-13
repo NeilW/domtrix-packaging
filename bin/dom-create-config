@@ -1,4 +1,4 @@
-#! /usr/bin/ruby1.8
+#!/usr/bin/env ruby
 #    Brightbox - Create a domtrix configuration
 #    Copyright (C) 2010 Brightbox Systems
 #    Author: Neil Wilson

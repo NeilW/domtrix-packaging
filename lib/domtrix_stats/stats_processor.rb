@@ -36,10 +36,10 @@ module DomtrixStats
         stats_object.current_domain { current_domain }
 	stats_object.terminate if terminated?
 	Syslog.debug("#{self.class.name}: Ticking #{stats_object.name}")
-	stats_object.tick do |topic, stats|
+	stats_object.tick do |mq, stats|
 	  stats = @static_info.merge(stats) if stats_object.send_static_info?
-	  Syslog.info("#{self.class.name}: Stats generated for topic #{topic}")
-	  stats_handler.call(topic, @machine, stats)
+	  Syslog.info("#{self.class.name}: Stats generated for #{mq}")
+	  stats_handler.call(mq, @machine, stats)
 	end
       end
     rescue Libvirt::Error => e

@@ -25,12 +25,24 @@ module DomtrixCommon
     ipaddr(bridge.sub(/^#{BRIDGE_PREFIX}/,'').hex)
   end
 
+  def bridge_pattern
+    /#{BRIDGE_PREFIX}[\da-f]{6}/
+  end
+
   def vlan_pattern
     /#{VLAN_PREFIX}(?:\d{1,4}\.){0,2}\d{1,4}/
   end
 
+  def vlan_network_pattern
+    /<source(?:\s+mode="bridge")?\s+dev="#{vlan_pattern}"(?:\s+mode="bridge")?/
+  end
+
   def mac_pattern
     /(?:[0-9A-F]{2}:){5}[0-9A-F]{2}/i
+  end
+
+  def mac_network_pattern
+    /address="(#{mac_pattern})"/
   end
 
   def vlan_id(tag_list)
@@ -47,8 +59,15 @@ module DomtrixCommon
 
   # Returns the IPv6 64 bit network as a string.
   def ipv6_network(zone_prefix, mac)
-    server_network = '%04x' % (stripped_mac(mac).hex>>2 & 0xFFFF)
-    "#{zone_prefix}:#{server_network}"
+    begin
+      v6_net = IPAddr.new(zone_prefix)
+    rescue ArgumentError
+      # Legacy prefix
+      v6_net = IPAddr.new(zone_prefix+'::/48')
+    end
+    mask = ~v6_net.instance_variable_get(:@mask_addr) & IPAddr::IN6MASK
+    mac_section = (stripped_mac(mac).hex<<62) & mask
+    (v6_net | mac_section).mask(64).to_s.sub(/::$/,'')
   end
 
   # Mac without the ':'

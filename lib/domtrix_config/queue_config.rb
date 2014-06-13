@@ -11,13 +11,13 @@ class QueueConfig
   DEFAULT_CONFDIR = '/etc/domtrix'
 
   def config_file
-    File.join(ENV['CONFDIR'] || DEFAULT_CONFDIR, 'config.yml')
+    File.expand_path(File.join(ENV['CONFDIR'] || DEFAULT_CONFDIR, 'config.yml'))
   end
 
   def load_config
     @config = YAML.load_file(config_file)
     if @config
-      @load_message = "Configuration loaded #{@config.keys.inspect}"
+      @load_message = "Configuration loaded from #{config_file}: #{@config.keys.inspect}"
     else
       @load_message = "Using blank config: failure loading #{config_file}"
     end

@@ -1,4 +1,4 @@
-#! /usr/bin/ruby1.8
+#!/usr/bin/env ruby
 #    Brightbox - Restore a database image
 #    Copyright (C) 2010 Brightbox Systems
 #    Author: Neil Wilson
@@ -11,17 +11,25 @@ rescue LoadError
   retry
 end
 
+require 'domtrix_auth_token'
+
+usage_args = 'queue-name source-uri'
+options = DomtrixAuthToken::options(usage_args)
+
 unless ARGV.length == 2
-  abort "Usage: #{File.basename $0} queue-name source-uri"
+  DomtrixAuthToken.bad_usage(usage_args)
 end
 
-HOST = ARGV.shift
-SOURCE_URI = ARGV.shift
+HOST, TARGET_URI = *ARGV
+restore_commands = {
+  :uri => SOURCE_URI
+}
+restore_commands[:auth_token] = options['auth_token'] if options['auth_token']
 
 queue = DomtrixQueue.new(HOST)
 queue.execute(
   'restore',
-  {:uri => SOURCE_URI},
+  restore_commands,
   "Restoring MySQL database from #{SOURCE_URI}"
   )
 exit
