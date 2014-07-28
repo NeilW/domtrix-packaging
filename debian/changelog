@@ -1,3 +1,10 @@
+domtrix (0.0.22-0ubuntu1) trusty; urgency=medium
+
+  * New Upstream code base
+  * Handle new haproxy initscripts in loadbalancer
+
+ -- Neil Wilson <neil@aldur.co.uk>  Mon, 28 Jul 2014 12:01:27 +0100
+
 domtrix (0.0.21-0ubuntu1) trusty; urgency=medium
 
   * New Upstream code base
