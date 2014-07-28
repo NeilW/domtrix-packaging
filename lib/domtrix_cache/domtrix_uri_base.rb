@@ -37,7 +37,7 @@ private
 
   def run_curl_command(curl_command=curl_copy_command)
     Syslog.debug("#{self.class.name}: #{curl_command}")
-    system(curl_command)
+    system('bash', '-c', 'set -o pipefail;'+curl_command)
     @curl_error = $?.exitstatus.to_s
     $?.success?
   end

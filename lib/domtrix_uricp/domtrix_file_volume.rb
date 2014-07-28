@@ -1,5 +1,13 @@
 class DomtrixFileVolume < DomtrixLvmVolume
 
+  include DomtrixConfig
+
+  def initialize(url)
+    super(url)
+    @qcow_compression = config['qcow_compression'] && '-c'
+    Syslog.debug("#{self.class.name}: Qcow compression is #{@qcow_compression?'on':'off'}")
+  end
+
   def create_from(local_file)
     Syslog.debug("#{self.class.name}: Checking file access permissions")
     File.open(local_file) {}
@@ -42,6 +50,10 @@ class DomtrixFileVolume < DomtrixLvmVolume
     FileUtils.cp(@local_file, url_path)
   rescue => e
     raise error_class, e.message
+  end
+
+  def qemu_options
+    "-O qcow2 #{@qcow_compression}"
   end
 
 end
