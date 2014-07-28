@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
 #    Brightbox - Command processor classes
-#    Copyright (C) 2010, Neil Wilson, Brightbox Systems
+#    Copyright (C) 2014, Brightbox Systems
+#    Author: Neil Wilson
 #
-#  Load Balancer Configure command.
+#  MySql services Configure command.
 
 class MysConfigureCommand < DataCommand
 
