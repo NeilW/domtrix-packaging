@@ -8,10 +8,14 @@ class DomtrixLvmVolume < DomtrixUriBase
       Syslog.debug("#{self.class.name}: Stream detected, copying image")
       FileUtils.cp(local_file, url_path)
     else
-      qemu_convert(local_file, url_path)
+      qemu_convert(local_file, url_path, qemu_options)
     end
   rescue => e
     raise error_class, e.message
+  end
+
+  def qemu_options
+    nil
   end
 
 end

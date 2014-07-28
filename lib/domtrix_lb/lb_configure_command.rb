@@ -1,15 +1,16 @@
 #!/usr/bin/env ruby
 #    Brightbox - Command processor classes
-#    Copyright (C) 2010, Neil Wilson, Brightbox Systems
+#    Copyright (C) 2014, Brightbox Systems
+#    Author: Neil Wilson
 #
 #  Load Balancer Configure command.
 
 class LbConfigureCommand < DataCommand
   
+private
+
   include RootPrivileges
   include CommandRunner
-
-private
 
   def valid_data?
     super || valid_string?
@@ -36,7 +37,7 @@ private
   end
 
   def haproxy_enabled?
-    system("grep -q '^ENABLED=1$' /etc/default/haproxy")
+    system("service haproxy status")
   end
 
   def write_haproxy_config
@@ -62,9 +63,16 @@ private
   end
 
   def restart_haproxy
-    Syslog.debug "Restarting haproxy"
-    run("service haproxy restart >/dev/null 2>&1", "restart haproxy")
-    Syslog.debug "Restarted"
+    Syslog.debug "Attempting online reload"
+    if run("service haproxy reload >/dev/null 2>&1", "reload haproxy")
+      Syslog.debug "Reloaded"
+      return
+    end
+    if run("service haproxy restart >/dev/null 2>&1", "restart haproxy")
+      Syslog.debug "Restarted"
+    else
+      Syslog.debug "Ignoring failure"
+    end
   end
 
   def start_haproxy

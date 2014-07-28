@@ -71,9 +71,7 @@ private
   end
 
   def get_temp_filename(filename)
-    temp = Tempfile.new(File.basename(filename), File.dirname(filename))
-    temp.close
-    temp.path+'-new'
+    Dir::Tmpname.make_tmpname(filename, nil)
   end
 
   def headers
