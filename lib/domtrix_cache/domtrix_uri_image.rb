@@ -34,9 +34,11 @@ class DomtrixUriImage < DomtrixCacheCore
     elsif independent_qcow2_file?(source)
       Syslog.debug("#{self.class.name}: Independent Qcow2 file detected - uploading from source")
       @target = source
+      extract_metadata
     else
       @target = path
       qemu_convert(source, path, "-O qcow2 #{@qcow_compression}")
+      extract_metadata
     end
   rescue => e
     raise error_class, e.message
@@ -45,6 +47,8 @@ class DomtrixUriImage < DomtrixCacheCore
 private
   
   BLOCK_SIZE=1048576
+
+  METADATA_LIST=['virtual size']
   
   def empty_input_file?(source)
     input_file_details = File.stat(source)
@@ -67,6 +71,10 @@ private
     else
       run_curl_command_or_raise(full_curl_copy_command(@target))
     end
+  end
+
+  def extract_metadata
+    @metadata=qemu_image_info(@target)
   end
 
   def run_curl_command_or_raise(curl_command)
@@ -102,6 +110,18 @@ private
 
   def curl_manifest_command
     "curl -f -s -S #{headers} -X PUT -H 'X-Object-Manifest: #{url_path.sub(%r{^/v1/acc-\w{5}/},'')}' #{@image_url} --data-binary ''"
+  end
+
+  def headers
+    result = super
+    return result unless result && @metadata
+    header_list = @metadata.
+      select  {|k,v| METADATA_LIST.include? k}.
+      collect {|k,v|
+        "-H 'X-Object-Meta-#{k.split.map(&:capitalize).join('-')}:#{v}'"
+      }
+    header_list << result
+    header_list.join(' ')
   end
 
   def zap
