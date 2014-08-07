@@ -55,6 +55,10 @@ module MysUriCommon
     raise "Invalid URI: #{target_uri_display_name}"
   end
 
+  def image_identifier
+    data_uri[-9,9].to_s
+  end
+
   def current_token
     target_uri_name.headers && target_uri_name.headers['auth_token']
   end
