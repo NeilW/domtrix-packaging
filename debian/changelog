@@ -1,3 +1,11 @@
+domtrix (0.0.23-0ubuntu1) trusty; urgency=medium
+
+  * Port metadata stamp in uri-cp
+  * Extract dbi identifier from url for stats
+  * Use 'resource' attribute if it exists
+
+ -- Neil Wilson <neil@aldur.co.uk>  Fri, 08 Aug 2014 10:54:18 +0100
+
 domtrix (0.0.22-0ubuntu1) trusty; urgency=medium
 
   * New Upstream code base
