@@ -62,7 +62,7 @@ nice tar --create --one-file-system --sparse #{compression_tag} --directory /var
 
   def report_statistics
     Syslog.info "Reporting snapshot size as #{@statistics[:db_size]}Mb"
-    @action_block.call(target, @statistics, nil)
+    @action_block.call(image_identifier, @statistics, nil)
   end
 
   def data_action
