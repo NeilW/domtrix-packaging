@@ -56,7 +56,7 @@ module MysUriCommon
   end
 
   def image_identifier
-    data_uri[-9,9].to_s
+    @data[:resource] || data_uri[-9,9].to_s
   end
 
   def current_token
