@@ -17,6 +17,10 @@ private
     "nice curl --silent --show-error --fail #{curl_token_option} #{target_uri_name} | tar --extract #{compression_tag} --directory #{data_area} ."
   end
 
+  def get_magic_command
+    "nice curl -r0-3 --silent --show-error --fail #{curl_token_option} #{target_uri_name}"
+  end
+
   def service_running_command
     "status mysql 2>/dev/null | grep -q running"
   end
@@ -49,11 +53,6 @@ private
   end
 
   attr_reader :compression_tag
-
-  def curl_token_option
-    token = current_token
-    "-H 'X-Auth-Token:#{token}'" if token
-  end
 
   def run_restore
     Syslog.debug "Running restoration process"
