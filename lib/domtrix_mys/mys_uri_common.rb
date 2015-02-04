@@ -22,11 +22,6 @@ module MysUriCommon
     {'auth_token' => auth_token }
   end
 
-  #Change this to select the tar compression protocol to use
-  def compression_tag
-    ""
-  end
-
   def dot_dirs
     %w[. ..].collect! {|x| File.join(data_area, x) }
   end
@@ -61,16 +56,6 @@ module MysUriCommon
 
   def current_token
     target_uri_name.headers && target_uri_name.headers['auth_token']
-  end
-
-  def curl_token_option
-    token = current_token
-    "-H 'X-Auth-Token:#{token}'" if token
-  end
-
-  def token_details
-    token = current_token
-    "--auth '#{token}'" if token
   end
 
   def target_uri_display_name

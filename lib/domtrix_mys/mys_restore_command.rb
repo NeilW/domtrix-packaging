@@ -32,12 +32,36 @@ private
     raise RuntimeError, "Failed to zero data area: #{e.message}"
   end
 
+  def determine_compression
+    Syslog.debug("#{self.class.name}: Checking compression type")
+    magic = cmd(get_magic_command, "Fetching magic number", "failed to fetch magic number from #{target_uri_display_name}").to_s
+    case
+    when magic.unpack('V') == [0x184D2204]
+      Syslog.info("#{self.class.name}: Detected lz4 compressed archive")
+      @compression_tag = "-Ilz4"
+    when magic.unpack('n') == [0x1f8b]
+      Syslog.info("#{self.class.name}: Detected gzip compressed archive")
+      @compression_tag = "-z"
+    else
+      Syslog.info("#{self.class.name}: Assuming uncompressed archive")
+      @compression_tag = ""
+    end
+  end
+
+  attr_reader :compression_tag
+
+  def curl_token_option
+    token = current_token
+    "-H 'X-Auth-Token:#{token}'" if token
+  end
+
   def run_restore
     Syslog.debug "Running restoration process"
     if system(service_running_command)
       run(stop_service_command, "stopped MySQL service", "failed to stop MySQL service")
     end
     zero_data_area
+    determine_compression
     run(mys_restore_command, "restored MySQL data area", "failed to restore database from #{target_uri_display_name}")
   end
 

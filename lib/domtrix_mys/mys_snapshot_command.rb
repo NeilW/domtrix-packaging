@@ -17,7 +17,7 @@ private
     <<-END
 #!/bin/sh
 logger -t db-snapshot "Snapshotting MySQL database to #{target_uri_display_name}"
-nice tar --create --one-file-system --sparse #{compression_tag} --directory /var/cache/mylvmbackup/mnt/backup --exclude-caches-under . --directory .. backup-pos | uri-cp #{token_details} file:///dev/stdin '#{target_uri_name}'
+nice tar --create --one-file-system --sparse #{compression_tag} --directory /var/cache/mylvmbackup/mnt/backup --exclude-caches-under . --directory .. backup-pos | segment_upload #{token_details} #{segment_size_details} '#{target_uri_name}'
   END
   end
 
@@ -28,6 +28,24 @@ nice tar --create --one-file-system --sparse #{compression_tag} --directory /var
 
   def snapshot_check_command
     "nice curl --silent --show-error --fail --head #{curl_token_option} '#{target_uri_name}'"
+  end
+
+  #LZ4 compression
+  def compression_tag
+    "-Ilz4"
+  end
+
+  def segment_size
+    config['upload_segment_size']
+  end
+
+  def segment_size_details
+    segment_size && "--segment-size #{segment_size}B"
+  end
+
+  def token_details
+    token = current_token
+    "--auth-token '#{token}'" if token
   end
 
   def run_snapshot
