@@ -14,6 +14,11 @@ module MysUriCommon
     @data[:auth_token]
   end
 
+  def curl_token_option
+    token = current_token
+    "-H 'X-Auth-Token:#{token}'" if token
+  end
+
   def data_area
     "/var/lib/mysql"
   end

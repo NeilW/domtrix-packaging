@@ -20,7 +20,7 @@ unless ARGV.length == 2
   DomtrixAuthToken.bad_usage(usage_args)
 end
 
-HOST, TARGET_URI = *ARGV
+HOST, SOURCE_URI = *ARGV
 restore_commands = {
   :uri => SOURCE_URI
 }
