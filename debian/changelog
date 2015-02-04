@@ -1,3 +1,9 @@
+domtrix (0.0.24-0ubuntu1) trusty; urgency=medium
+
+  * Add initial lz4 support
+
+ -- Neil Wilson <neil@aldur.co.uk>  Wed, 04 Feb 2015 10:38:24 +0000
+
 domtrix (0.0.23-0ubuntu1) trusty; urgency=medium
 
   * Port metadata stamp in uri-cp
