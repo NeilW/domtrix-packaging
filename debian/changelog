@@ -1,3 +1,10 @@
+domtrix (0.0.26-0ubuntu1) trusty; urgency=medium
+
+  * Remove old uri-cp code
+  * Add multiple certificate support
+
+ -- Neil Wilson <neil@aldur.co.uk>  Fri, 01 Apr 2016 11:59:58 +0100
+
 domtrix (0.0.25-0ubuntu1) trusty; urgency=medium
 
   * Fix restore command
