@@ -51,7 +51,7 @@ def execute(command, data, message)
     @report = YAML::load(msg.body) 
     warn "Report for #{@report.id}: #{@report.state}"
     results.delete(@report.id) unless @report.state == 'acknowledged' 
-    abort if results.empty?
+    Thread.exit if results.empty?
   end
   @client.join
 end

@@ -12,6 +12,10 @@ private
   include RootPrivileges
   include CommandRunner
 
+  def certdir
+    "/etc/haproxy/certs"
+  end
+
   def valid_data?
     super || valid_string?
   end
@@ -33,7 +37,11 @@ private
   end
 
   def certificate
-    @data.kind_of?(Hash) && @data[:pem]
+    (@data.kind_of?(Hash) && @data[:pem]).to_s
+  end
+
+  def other_certificates
+    (@data.kind_of?(Hash) && @data[:certs]).to_a
   end
 
   def haproxy_enabled?
@@ -41,19 +49,39 @@ private
   end
 
   def write_haproxy_config
-    Syslog.debug "Updating haproxy config"
-    File.open("/etc/haproxy/haproxy.cfg", "w") do |f|
-      f.write config
+    write_element(
+      config,
+      "Updating haproxy config",
+      "/etc/haproxy/haproxy.cfg"
+    )
+  end
+
+  def write_haproxy_certificate
+    write_element(
+      certificate,
+      "Updating haproxy default certificate",
+      "/etc/haproxy/ssl_cert.pem"
+    )
+  end
+
+  def write_element(element, message, filename)
+    Syslog.debug message
+    File.open(filename, "w") do |f|
+      f.write element
     end
     Syslog.debug "Updated."
   end
 
-  def write_haproxy_certificate
-    Syslog.debug "Updating haproxy certificate"
-    File.open("/etc/haproxy/ssl_cert.pem", "w") do |f|
-      f.write certificate
+  def write_other_certificates
+    FileUtils.mkdir_p certdir
+    FileUtils.rm_f Dir[File.join(certdir, '*')]
+    other_certificates.each_with_index do |cert, index|
+      write_element(
+        cert,
+	"Updating cert #{index}",
+	File.join(certdir, 'cert%02d.pem' % index)
+      )
     end
-    Syslog.debug "Updated."
   end
 
   def enable_haproxy
@@ -84,6 +112,7 @@ private
   def data_action
     write_haproxy_config if config
     write_haproxy_certificate if certificate
+    write_other_certificates if other_certificates
     if haproxy_enabled?
       restart_haproxy
     else

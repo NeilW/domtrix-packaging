@@ -3,6 +3,7 @@
 #  Copyright (c) 2010, Brightbox Systems
 #  Author: Neil Wilson
 
+require 'fileutils'
 require 'domtrix_core'
 %w(
   lb_configure_command

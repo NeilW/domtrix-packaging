@@ -30,4 +30,4 @@ queue.execute(
   data_hash,
   "Configuring load-balancer #{LB_QUEUE}"
   )
-exit
+exit 0
