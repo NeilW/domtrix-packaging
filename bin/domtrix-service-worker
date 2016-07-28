@@ -33,4 +33,5 @@ require 'domtrix_worker'
 
 # Command redirector table
 app = WorkerManager.new(command_hash)
+$0 = "#{ENV['MACHINE']}: Domtrix Service Worker"
 app.run
