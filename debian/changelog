@@ -1,3 +1,12 @@
+domtrix (0.0.27-0ubuntu1) xenial; urgency=medium
+
+  * Add mulitple cert support to backend cli
+  * Sync with domtrix
+  * dom-puppet-config: widen support
+  * Update process listing details to include queue name
+
+ -- Neil Wilson <neil@aldur.co.uk>  Thu, 28 Jul 2016 13:55:35 +0100
+
 domtrix (0.0.26-0ubuntu1) trusty; urgency=medium
 
   * Remove old uri-cp code
