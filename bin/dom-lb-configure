@@ -13,17 +13,21 @@ rescue LoadError
   retry
 end
 
-unless (2..3).include?(ARGV.length) 
-  abort "Usage: #{File.basename $0} queue-name haproxy-config [ssl-cert]"
+unless ARGV.length >= 2
+  abort "Usage: #{File.basename $0} queue-name haproxy-config [ssl-cert...]"
 end
 
 LB_QUEUE = ARGV.shift
 CONFIG = ARGV.shift
-CERT = ARGV.shift
+cert_list = ARGV.map do |f|
+  File.read f
+end
 
 data_hash = {:config => File.read(CONFIG)}
-data_hash[:pem] = File.read(CERT) if CERT
-
+unless cert_list.empty?
+  data_hash[:pem] = cert_list.first
+  data_hash[:certs] = cert_list
+end
 queue = DomtrixQueue.new(LB_QUEUE)
 queue.execute(
   'configure',

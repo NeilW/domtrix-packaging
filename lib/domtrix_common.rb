@@ -81,4 +81,12 @@ module DomtrixCommon
     eui64 = (temp[0..5]+'fffe'+temp[-6..-1]).hex ^ (1 << 57)
   end
 
+  def kernel_version
+    `uname -r`.strip
+  end
+
+  def working_macvlan?
+    kernel_version > '3.10.0'
+  end
+
 end

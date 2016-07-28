@@ -13,6 +13,7 @@ module CommandRunner
   end
 
   def cmd(command, log_message=nil, raise_message=nil)
+    Syslog.debug("#{self.class.name}: Running #{command}")
     result=`#{command}`
     if $?.success?
       success_log(log_message)

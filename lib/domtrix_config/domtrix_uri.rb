@@ -2,11 +2,12 @@ class DomtrixUri < DelegateClass(URI)
 
   def initialize(uri, config=nil, headers=nil)
     @headers = headers
+    @config = config
     if uri.respond_to?(:headers)
       temp = uri.__getobj__.dup
       @headers ||= uri.headers && uri.headers.dup
     else
-      temp = Kernel.URI(uri)
+      temp = Kernel.URI(uri.to_s)
     end
     super(temp)
     if config && missing_ftp_credentials?
@@ -26,6 +27,10 @@ class DomtrixUri < DelegateClass(URI)
 
   def missing_ftp_credentials?
     __getobj__.scheme == 'ftp' && __getobj__.user.nil?
+  end
+
+  def basename
+    File.basename(__getobj__.path, '.*')
   end
 
 end

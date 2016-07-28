@@ -11,7 +11,7 @@ unknown_command
 data_command
 abort_command
 command_runner
-host_type_detector
+init_detector
 ).each do |file|
   autoload(file.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase },"domtrix_core/#{file}")
 end

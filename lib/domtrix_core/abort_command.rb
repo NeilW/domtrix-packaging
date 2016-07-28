@@ -22,7 +22,7 @@ private
   def valid_job?
     cmd_name = `ps -p #{jobid} -o comm=`.chomp
     Syslog.debug "AbortCommand: Found running command '#{cmd_name}'" unless cmd_name.empty?
-    %w(dd uri-cp sparse-expand).include?(cmd_name)
+    %w(dd uricp sparse-expand).include?(cmd_name)
   end
 
   def kill_job
