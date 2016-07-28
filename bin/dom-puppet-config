@@ -17,6 +17,9 @@ list_classes() {
     mys)
       echo "- mys_service"
       ;;
+    pg)
+      echo "- pg_service"
+      ;;
     *)
       fail "Unknown service ${service}"
       ;;
@@ -24,8 +27,8 @@ list_classes() {
 }
 
 generate_hiera_config() {
-  local service_type="${1}"
-  local mys_version
+  local service_type="$1"
+  local db_version="$6"
   local queue_name="$2"
   local mq_login="$3"
   local mq_password="$4"
@@ -34,9 +37,11 @@ generate_hiera_config() {
   case "${1}" in
       mys56|mys5_6)
           service_type=mys
-	  mys_version=5.6
+	  db_version=5.6
 	  ;;
-      *)  mys_version=5.5
+      mys55|mys5_5|mys)
+          service_type=mys
+          db_version="${6:-5.5}"
           ;;
   esac
   class_list=$(list_classes ${service_type})
@@ -51,10 +56,14 @@ domtrix::mqpassword: ${mq_password}
 domtrix::mqhosts: ${mq_hosts}
 domtrix::queue: ${queue_name}
 domtrix::service: ${service_type}
-mys_service::version: ${mys_version}
+mys_service::version: ${db_version}
+pg_service::version: ${db_version}
 END
 }
 
-[ "$#" -eq 5 ] ||
-  fail "Usage: $(basename $0) <service> <queue> <login> <password> <hosts>"
+[ "$#" -ge 5 ] ||
+  fail "Usage: $(basename $0) <service> <queue> <login> <password> <hosts> [<version>]"
+[ "$#" -le 6 ] ||
+  fail "Usage: $(basename $0) <service> <queue> <login> <password> <hosts> [<version>]"
+
 generate_hiera_config "$@"
