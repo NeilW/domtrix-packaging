@@ -22,11 +22,17 @@ private
   end
 
   def service_running_command
-    "status mysql 2>/dev/null | grep -q running"
+    InitDetector.select(
+      "systemctl is-active --quiet mysql",
+      "status mysql 2>/dev/null | grep -q running"
+    )
   end
 
   def stop_service_command
-    "stop --quiet mysql"
+    InitDetector.select(
+      "systemctl stop mysql",
+      "stop --quiet mysql"
+    )
   end
 
   def zero_data_area
