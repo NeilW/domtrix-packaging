@@ -1,3 +1,9 @@
+domtrix (0.0.28-0ubuntu1) xenial; urgency=medium
+
+  * mys_restore_command: Add systemd support
+
+ -- Neil Wilson <neil@aldur.co.uk>  Fri, 29 Jul 2016 16:22:19 +0100
+
 domtrix (0.0.27-0ubuntu1) xenial; urgency=medium
 
   * Add mulitple cert support to backend cli
