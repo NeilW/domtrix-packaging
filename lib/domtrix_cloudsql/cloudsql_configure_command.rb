@@ -3,9 +3,9 @@
 #    Copyright (C) 2014, Brightbox Systems
 #    Author: Neil Wilson
 #
-#  MySql services Configure command.
+#  CloudSQL services Configure command.
 
-class MysConfigureCommand < DataCommand
+class CloudsqlConfigureCommand < DataCommand
 
 private
   
@@ -58,6 +58,7 @@ private
   def build_puppet_config_hash
     new_hash = {}
     new_hash["mys_service::admin_password"] = admin_password if admin_password
+    new_hash["pg_service::admin_password"] = admin_password if admin_password
     new_hash["domtrix::ftplogin"] = ftp_login if ftp_login
     new_hash["domtrix::ftppassword"] = ftp_password if ftp_password
     new_hash["domtrix::notify_service"] = 'no'
@@ -66,8 +67,8 @@ private
     initial_yaml_hash.merge new_hash
   end
 
-  def write_mysql_puppet_config(puppet_hash)
-    Syslog.debug "#{self.class.name}: Updating Mysql hiera runtime config"
+  def write_cloudsql_puppet_config(puppet_hash)
+    Syslog.debug "#{self.class.name}: Updating CloudSQL hiera runtime config"
     File.open(runtime_yaml_file,
       File::CREAT|File::TRUNC|File::WRONLY, 0600) do |f|
       YAML.dump(puppet_hash, f)
@@ -76,7 +77,7 @@ private
   end
 
   def start_puppet_run
-    Syslog.debug "#{self.class.name}: Starting MySQL puppet reconfigure"
+    Syslog.debug "#{self.class.name}: Starting CloudSQL puppet reconfigure"
     run("puppet-git-reapply #{update_flag} >/dev/null 2>&1", "Puppet manifests reapplied #{update_flag}", "Puppet run failure")
     Syslog.debug "#{self.class.name}: Completed"
   end
@@ -88,10 +89,10 @@ private
 
   def data_action
     temp_hash = build_puppet_config_hash
-    write_mysql_puppet_config(temp_hash)
+    write_cloudsql_puppet_config(temp_hash)
     start_puppet_run
     temp_hash.delete("domtrix::notify_service")
-    write_mysql_puppet_config(temp_hash)
+    write_cloudsql_puppet_config(temp_hash)
     update_central_config if (ftp_login || ftp_password)
     @state="completed"
   end

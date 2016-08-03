@@ -19,11 +19,18 @@ case QueueConfig.instance['service_type']
       'configure' => LbConfigureCommand
     }
   when 'mys'
-    require 'domtrix_mys'
+    require 'domtrix_cloudsql'
     command_hash = {
-      'configure' => MysConfigureCommand,
+      'configure' => CloudsqlConfigureCommand,
       'snapshot' => MysSnapshotCommand,
       'restore' => MysRestoreCommand
+    }
+  when 'pg'
+    require 'domtrix_cloudsql'
+    command_hash = {
+      'configure' => CloudsqlConfigureCommand,
+#      'snapshot' => PgSnapshotCommand,
+#      'restore' => PgRestoreCommand
     }
   else
     abort "Unsupported or missing service type"
