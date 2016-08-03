@@ -1,3 +1,9 @@
+domtrix (0.0.29-0ubuntu1) xenial; urgency=medium
+
+  * Intial PostgreSQL support
+
+ -- Neil Wilson <neil@aldur.co.uk>  Wed, 03 Aug 2016 11:42:30 +0100
+
 domtrix (0.0.28-0ubuntu1) xenial; urgency=medium
 
   * mys_restore_command: Add systemd support
