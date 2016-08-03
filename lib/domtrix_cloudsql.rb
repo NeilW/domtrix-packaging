@@ -9,9 +9,9 @@ require 'domtrix_core'
 require 'domtrix_config'
 %w(
   mys_uri_common
-  mys_configure_command
+  cloudsql_configure_command
   mys_snapshot_command
   mys_restore_command
 ).each do |file|
-  require "domtrix_mys/#{file}"
+  require "domtrix_cloudsql/#{file}"
 end

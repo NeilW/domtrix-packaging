@@ -2,6 +2,8 @@
 set -e
 
 HIERA_FILE=/etc/brightbox/hiera/initial.yaml
+MYS_DEFAULT_VERSION=5.5
+PG_DEFAULT_VERSION=9.5
 
 fail() {
   echo "$@" >&2
@@ -41,8 +43,12 @@ generate_hiera_config() {
 	  ;;
       mys55|mys5_5|mys)
           service_type=mys
-          db_version="${6:-5.5}"
-          ;;
+          db_version="${6:-${MYS_DEFAULT_VERSION}}"
+	  ;;
+      pg)
+	  service_type=pg
+	  db_version="${6:-${PG_DEFAULT_VERSION}}"
+	  ;;
   esac
   class_list=$(list_classes ${service_type})
   mkdir -p $(dirname "${HIERA_FILE}")
