@@ -11,7 +11,7 @@ private
   include RootPrivileges
   include DomtrixConfig
   include CommandRunner
-  include MysUriCommon
+  include CloudsqlUriCommon
 
   alias data_area mysql_data_area
 

@@ -30,7 +30,7 @@ private
 
   def stop_service_command
     InitDetector.select(
-      "systemctl stop #{service_name}",
+      "systemctl stop #{service_name}*",
       "stop --quiet #{service_name}"
     )
   end
