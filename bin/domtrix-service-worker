@@ -30,7 +30,7 @@ case QueueConfig.instance['service_type']
     command_hash = {
       'configure' => CloudsqlConfigureCommand,
 #      'snapshot' => PgSnapshotCommand,
-#      'restore' => PgRestoreCommand
+      'restore' => PgRestoreCommand
     }
   else
     abort "Unsupported or missing service type"
