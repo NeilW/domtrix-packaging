@@ -1,3 +1,9 @@
+domtrix (0.0.31-0ubuntu1) xenial; urgency=medium
+
+  * Fix postgres shutdown and restore
+
+ -- Neil Wilson <neil@aldur.co.uk>  Fri, 12 Aug 2016 17:12:13 +0100
+
 domtrix (0.0.30-0ubuntu1) xenial; urgency=medium
 
   * Add Postgres restore command
