@@ -4,7 +4,7 @@
 #
 #  MySQL common uri commands
 
-module MysUriCommon
+module CloudsqlUriCommon
 
   def data_uri
     @data[:uri]
@@ -19,8 +19,20 @@ module MysUriCommon
     "-H 'X-Auth-Token:#{token}'" if token
   end
 
-  def data_area
+  def mysql_data_area
     "/var/lib/mysql"
+  end
+
+  def mysql_service_name
+    "mysql"
+  end
+
+  def postgres_data_area
+    "/var/lib/postgresql"
+  end
+
+  def postgres_service_name
+    "postgresql"
   end
 
   def headers

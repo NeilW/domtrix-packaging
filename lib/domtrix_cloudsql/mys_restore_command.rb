@@ -4,75 +4,11 @@
 #
 #  Mysql Restore Command
 
-class MysRestoreCommand < DataCommand
+class MysRestoreCommand < CloudsqlRestoreCommand
 
 private
-  
-  include RootPrivileges
-  include DomtrixConfig
-  include CommandRunner
-  include MysUriCommon
 
-  def mys_restore_command
-    "nice curl --silent --show-error --fail #{curl_token_option} #{target_uri_name} | tar --extract #{compression_tag} --directory #{data_area} ."
-  end
-
-  def get_magic_command
-    "nice curl -r0-3 --silent --show-error --fail #{curl_token_option} #{target_uri_name}"
-  end
-
-  def service_running_command
-    InitDetector.select(
-      "systemctl is-active --quiet mysql",
-      "status mysql 2>/dev/null | grep -q running"
-    )
-  end
-
-  def stop_service_command
-    InitDetector.select(
-      "systemctl stop mysql",
-      "stop --quiet mysql"
-    )
-  end
-
-  def zero_data_area
-    Syslog.info("#{self.class.name}: Zeroing MySQL data area - #{data_area}")
-    FileUtils.rm_r(data_area_file_list)
-  rescue SystemCallError => e
-    raise RuntimeError, "Failed to zero data area: #{e.message}"
-  end
-
-  def determine_compression
-    Syslog.debug("#{self.class.name}: Checking compression type")
-    magic = cmd(get_magic_command, "Fetching magic number", "failed to fetch magic number from #{target_uri_display_name}").to_s
-    case
-    when magic.unpack('V') == [0x184D2204]
-      Syslog.info("#{self.class.name}: Detected lz4 compressed archive")
-      @compression_tag = "-Ilz4"
-    when magic.unpack('n') == [0x1f8b]
-      Syslog.info("#{self.class.name}: Detected gzip compressed archive")
-      @compression_tag = "-z"
-    else
-      Syslog.info("#{self.class.name}: Assuming uncompressed archive")
-      @compression_tag = ""
-    end
-  end
-
-  attr_reader :compression_tag
-
-  def run_restore
-    Syslog.debug "Running restoration process"
-    if system(service_running_command)
-      run(stop_service_command, "stopped MySQL service", "failed to stop MySQL service")
-    end
-    zero_data_area
-    determine_compression
-    run(mys_restore_command, "restored MySQL data area", "failed to restore database from #{target_uri_display_name}")
-  end
-
-  def data_action
-    run_restore
-    @state="completed"
-  end
+  alias data_area mysql_data_area
+  alias service_name mysql_service_name
 
 end

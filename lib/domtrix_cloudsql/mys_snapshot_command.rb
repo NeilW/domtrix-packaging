@@ -13,6 +13,8 @@ private
   include CommandRunner
   include MysUriCommon
 
+  alias data_area mysql_data_area
+
   def backup_script
     <<-END
 #!/bin/sh

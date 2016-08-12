@@ -12,6 +12,7 @@ require 'domtrix_config'
   cloudsql_configure_command
   mys_snapshot_command
   mys_restore_command
+  pg_restore_command
 ).each do |file|
   require "domtrix_cloudsql/#{file}"
 end
