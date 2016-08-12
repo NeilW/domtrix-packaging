@@ -8,7 +8,7 @@ require 'uri'
 require 'domtrix_core'
 require 'domtrix_config'
 %w(
-  mys_uri_common
+  cloudsql_uri_common
   cloudsql_configure_command
   mys_snapshot_command
   mys_restore_command
