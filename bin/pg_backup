@@ -5,7 +5,7 @@
 # Copyright (C) 2016 Brightbox Systems
 # Author: Neil Wilson
 #
-set -e
+set -eu -o pipefail
 
 mountdir=/mnt/pg_backup
 volgroup_name=pg
@@ -16,62 +16,64 @@ target_partition=/dev/${volgroup_name}/${target_name}
 
 program_name=$(basename $0)
 
+
 cleanup() {
   echo "Cleaning up"
   set +e
-  trap '' SIGINT SIGQUIT SIGTERM
-  trap - ERR
   umount ${mountdir}
   lvremove -f ${target_partition}
   rmdir ${mountdir}
+  exit ${1:-1}
 }
 
-trap "cleanup; fail 'stopping due to command failure'" ERR
-trap "cleanup; fail 'stopping due to signal'" SIGINT SIGQUIT SIGTERM
+trap "cleanup;" ERR SIGINT SIGQUIT SIGTERM
 
 fail() {
   echo "${program_name}: $@" >&2
   exit 1
 }
 
-checkpoint() {
-  sudo -u postgres psql -c 'checkpoint;'
-}
+case "$#" in
+  3)
+    segment_statement="--segment-size ${3}B"
+    ;;
+  2)
+    segment_statement-""
+    ;;
+  *)
+    fail "auth_token target_uri [segment_size]"
+    ;;
+esac
+auth_token=$1
+target_uri=$2
 
-snapshot() {
-  lvcreate --snapshot \
-           --name "${target_name}" \
-           "${source_partition}"
-}
+#Checkpoint
+sudo -u postgres psql -c 'checkpoint;'
 
-mount_snapshot() {
-  mkdir -p "${mountdir}"
-  mount -o rw,nouuid "${target_partition}" "${mountdir}"
-}
+#Snapshot
+lvcreate --snapshot \
+   --name "${target_name}" \
+   "${source_partition}"
 
-backup() {
-  local auth_token=$1
-  local segment_size=$2
-  local target_uri=$3
-  nice tar --create \
-           --one-file-system \
-	   --sparse \
-	   -Ilz4 \
-	   --directory "${mountdir}" \
-	   --exclude-caches-under \
-	   . |
-	   segment_upload --auth-token "${auth_token}" \
-	                  --segment-size "${segment_size}"B \
-			  "${target_uri}"
-}
+#Mount snapshot
+echo "Mounting ${target_partition} at ${mountdir}"
+mkdir -p "${mountdir}"
+mount -o rw,nouuid "${target_partition}" "${mountdir}"
 
-[ "$#" -eq 3 ] || fail "auth_token segment_size target_uri"
+#Backup snapshot
+echo "Backing up database to ${target_uri}"
+tar --create \
+   --one-file-system \
+   --sparse \
+   -Ilz4 \
+   --directory "${mountdir}" \
+   --exclude-caches-under \
+   . |
+   segment_upload --auth-token "${auth_token}" \
+		  ${segment_statement} \
+		  "${target_uri}"
 
-checkpoint
-snapshot
-mount_snapshot
-backup "$@"
+#Clear up
 trap '' SIGINT SIGQUIT SIGTERM
 trap - ERR
-cleanup
-exit 0
+cleanup 0

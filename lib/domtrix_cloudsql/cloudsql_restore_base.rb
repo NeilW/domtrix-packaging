@@ -4,7 +4,7 @@
 #
 #  Cloudsql Restore Command
 
-class CloudsqlRestoreCommand < DataCommand
+class CloudsqlRestoreBase < DataCommand
 
 private
   
