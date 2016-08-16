@@ -1,3 +1,10 @@
+domtrix (0.0.32-0ubuntu1) xenial; urgency=medium
+
+  * Add restore refactor to load file
+  * pg_backup initial commit
+
+ -- Neil Wilson <neil@aldur.co.uk>  Tue, 16 Aug 2016 11:11:33 +0100
+
 domtrix (0.0.31-0ubuntu1) xenial; urgency=medium
 
   * Fix postgres shutdown and restore
