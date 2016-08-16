@@ -10,6 +10,7 @@ require 'domtrix_config'
 %w(
   cloudsql_uri_common
   cloudsql_configure_command
+  cloudsql_restore_command
   mys_snapshot_command
   mys_restore_command
   pg_restore_command
