@@ -29,7 +29,7 @@ case QueueConfig.instance['service_type']
     require 'domtrix_cloudsql'
     command_hash = {
       'configure' => CloudsqlConfigureCommand,
-#      'snapshot' => PgSnapshotCommand,
+      'snapshot' => PgSnapshotCommand,
       'restore' => PgRestoreCommand
     }
   else

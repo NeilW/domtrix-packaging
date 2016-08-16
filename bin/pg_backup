@@ -33,11 +33,19 @@ fail() {
   exit 1
 }
 
-[ "$#" -eq 3 ] || fail "auth_token segment_size target_uri"
-
+case "$#" in
+  3)
+    segment_statement="--segment-size ${3}B"
+    ;;
+  2)
+    segment_statement-""
+    ;;
+  *)
+    fail "auth_token target_uri [segment_size]"
+    ;;
+esac
 auth_token=$1
-segment_size=$2
-target_uri=$3
+target_uri=$2
 
 #Checkpoint
 sudo -u postgres psql -c 'checkpoint;'
@@ -62,7 +70,7 @@ tar --create \
    --exclude-caches-under \
    . |
    segment_upload --auth-token "${auth_token}" \
-		  --segment-size "${segment_size}"B \
+		  ${segment_statement} \
 		  "${target_uri}"
 
 #Clear up
