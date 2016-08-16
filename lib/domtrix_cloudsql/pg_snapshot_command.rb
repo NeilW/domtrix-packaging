@@ -8,12 +8,12 @@ class PgSnapshotCommand < CloudsqlSnapshotBase
 
 private
   
-  alias data_area pg_data_area
+  alias data_area postgres_data_area
 
   def pgbackup_command
     InitDetector.select(
-      "nice systemd-cat pg_backup #{token} '#{target_uri_name}' #{segment_size}",
-      "nice pg_backup #{token} '#{target_uri_name}' #{segment_size} | logger -t pg_backup"
+      "nice systemd-cat pg_backup #{current_token} '#{target_uri_name}' #{segment_size}",
+      "nice pg_backup #{current_token} '#{target_uri_name}' #{segment_size} | logger -t pg_backup"
     )
   end
 
