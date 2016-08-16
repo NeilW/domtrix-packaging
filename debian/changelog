@@ -1,3 +1,11 @@
+domtrix (0.0.33-0ubuntu1) xenial; urgency=medium
+
+  * Update pg_backup after testing
+  * Add Postgres snapshot command
+  * Correct some identifier names
+
+ -- Neil Wilson <neil@aldur.co.uk>  Tue, 16 Aug 2016 15:40:04 +0100
+
 domtrix (0.0.32-0ubuntu1) xenial; urgency=medium
 
   * Add restore refactor to load file
