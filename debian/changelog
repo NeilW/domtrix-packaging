@@ -1,3 +1,9 @@
+domtrix (0.0.34-0ubuntu1) xenial; urgency=medium
+
+  * Add concurrency locking
+
+ -- Neil Wilson <neil@aldur.co.uk>  Thu, 06 Oct 2016 09:11:14 +0100
+
 domtrix (0.0.33-0ubuntu1) xenial; urgency=medium
 
   * Update pg_backup after testing
