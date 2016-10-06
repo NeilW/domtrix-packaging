@@ -12,6 +12,8 @@ private
   include RootPrivileges
   include CommandRunner
 
+  LOCKFILE="/tmp/puppet-git-receiver-running"
+
   def required_elements_present?
     true
   end
@@ -78,7 +80,7 @@ private
 
   def start_puppet_run
     Syslog.debug "#{self.class.name}: Starting CloudSQL puppet reconfigure"
-    run("puppet-git-reapply #{update_flag} >/dev/null 2>&1", "Puppet manifests reapplied #{update_flag}", "Puppet run failure")
+    run("flock #{LOCKFILE} puppet-git-reapply #{update_flag} >/dev/null 2>&1", "Puppet manifests reapplied #{update_flag}", "Puppet run failure")
     Syslog.debug "#{self.class.name}: Completed"
   end
 
