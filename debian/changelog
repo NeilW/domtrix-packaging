@@ -1,3 +1,9 @@
+domtrix (0.0.35-0ubuntu1) xenial; urgency=medium
+
+  * Check haproxy config before reload
+
+ -- Neil Wilson <neil@aldur.co.uk>  Thu, 01 Dec 2016 14:35:09 +0000
+
 domtrix (0.0.34-0ubuntu1) xenial; urgency=medium
 
   * Add concurrency locking
