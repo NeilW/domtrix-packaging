@@ -6,14 +6,34 @@
 #  Load Balancer Configure command.
 
 class LbConfigureCommand < DataCommand
-  
+
 private
 
   include RootPrivileges
   include CommandRunner
 
-  def certdir
+  def cert_dir
     "/etc/haproxy/certs"
+  end
+
+  def config_file
+    "/etc/haproxy/haproxy.cfg"
+  end
+
+  def cert_file
+    "/etc/haproxy/ssl_cert.pem"
+  end
+
+  def config_list
+    [ cert_dir, config_file, cert_file ]
+  end
+
+  def old_suffix
+    ".old"
+  end
+
+  def old_config_list
+    config_list.map {|fn| fn+old_suffix }
   end
 
   def valid_data?
@@ -52,7 +72,7 @@ private
     write_element(
       config,
       "Updating haproxy config",
-      "/etc/haproxy/haproxy.cfg"
+      config_file
     )
   end
 
@@ -60,7 +80,7 @@ private
     write_element(
       certificate,
       "Updating haproxy default certificate",
-      "/etc/haproxy/ssl_cert.pem"
+      cert_file
     )
   end
 
@@ -73,13 +93,13 @@ private
   end
 
   def write_other_certificates
-    FileUtils.mkdir_p certdir
-    FileUtils.rm_f Dir[File.join(certdir, '*')]
+    FileUtils.rm_rf cert_dir
+    FileUtils.mkdir_p cert_dir
     other_certificates.each_with_index do |cert, index|
       write_element(
         cert,
 	"Updating cert #{index}",
-	File.join(certdir, 'cert%02d.pem' % index)
+	File.join(cert_dir, 'cert%02d.pem' % index)
       )
     end
   end
@@ -109,10 +129,57 @@ private
     Syslog.debug "Started"
   end
 
-  def data_action
+  def check_haproxy_config
+    Syslog.debug "Checking haproxy config"
+    run("/usr/sbin/haproxy -f #{config_file} -c -q", "check haproxy", "haproxy check failed")
+    Syslog.debug "Finished checking haproxy config"
+  end
+
+  def remove_old_config
+    FileUtils.rm_rf(old_config_list)
+  end
+
+  def conditional_move(source_fn, dest_fn)
+    File.rename(source_fn, dest_fn)
+  rescue Errno::ENOENT
+    #Source file missing - ignore
+  rescue Errno::ENOTEMPTY
+    #destination directory has entries - zap them
+    FileUtils.rm_rf(dest_fn)
+    retry
+  end
+
+  def write_config
     write_haproxy_config if config
-    write_haproxy_certificate if certificate
-    write_other_certificates if other_certificates
+    write_haproxy_certificate unless certificate.empty?
+    write_other_certificates unless other_certificates.empty?
+  end
+
+  def oldify_config
+    config_list.each do |fn|
+      conditional_move(fn, fn+old_suffix)
+    end
+  end
+
+  def restore_old_config
+    config_list.each do |fn|
+      conditional_move(fn+old_suffix, fn)
+    end
+  end
+
+  def test_config
+    oldify_config
+    write_config
+    check_haproxy_config
+    remove_old_config
+  rescue StandardError
+    Syslog.info("#{self.class.name}: Check failed - restoring previous config")
+    restore_old_config
+    raise
+  end
+
+  def data_action
+    test_config
     if haproxy_enabled?
       restart_haproxy
     else
