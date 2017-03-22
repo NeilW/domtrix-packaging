@@ -9,6 +9,6 @@ class PgSnapshotCommand < CloudsqlSnapshotBase
 private
 
   alias data_area postgres_data_area
-  alias volgroup mysql_volgroup
+  alias volgroup postgres_volgroup
 
 end
