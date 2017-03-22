@@ -27,12 +27,20 @@ module CloudsqlUriCommon
     "mysql"
   end
 
+  def mysql_volgroup
+    "mysql"
+  end
+
   def postgres_data_area
     "/var/lib/postgresql"
   end
 
   def postgres_service_name
     "postgresql"
+  end
+
+  def postgres_volgroup
+    "pg"
   end
 
   def headers
