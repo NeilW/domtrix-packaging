@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 #    Brightbox - Command processor classes
-#    Copyright (C) 2016, Neil Wilson, Brightbox Systems
+#    Copyright (C) 2017, Neil Wilson, Brightbox Systems
 #
-#  Postgres Snapshot command
+#  CloudSQL Snapshot command
 
 class CloudsqlSnapshotBase < DataCommand
 
 private
-  
+
   include RootPrivileges
   include DomtrixConfig
   include CommandRunner
@@ -47,6 +47,19 @@ private
     run_snapshot
     report_statistics
     @state="completed"
+  end
+
+  def run_snapshot
+    Syslog.debug "Running snapshot process"
+    run(backup_command, "Database snapshot complete", "failed to snapshot database to #{target_uri_display_name}")
+    run(snapshot_check_command, "Checked snapshot exists", "snapshot has not been created at #{target_uri_display_name}")
+  end
+
+  def backup_command
+    InitDetector.select(
+      "nice systemd-cat cloudsql_backup '#{current_token}' '#{target_uri_name}' '#{volgroup}' #{segment_size}",
+      "nice cloudsql_backup '#{current_token}' '#{target_uri_name}' '#{volgroup}' #{segment_size} | logger -t cloudsql_backup"
+    )
   end
 
 end

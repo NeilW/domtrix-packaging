@@ -7,9 +7,9 @@
 #
 set -eu -o pipefail
 
-mountdir=/mnt/pg_backup
-volgroup_name=pg
+volgroup_name=${3:-pg}
 source_name=data
+mountdir=/mnt/${volgroup_name}_backup
 target_name=${source_name}_backup
 source_partition=/dev/${volgroup_name}/${source_name}
 target_partition=/dev/${volgroup_name}/${target_name}
@@ -34,21 +34,26 @@ fail() {
 }
 
 case "$#" in
-  3)
-    segment_statement="--segment-size ${3}B"
+  4)
+    segment_statement="--segment-size ${4}B"
     ;;
-  2)
-    segment_statement-""
+  3)
+    segment_statement=""
     ;;
   *)
-    fail "auth_token target_uri [segment_size]"
+    fail "auth_token target_uri volgroup [segment_size]"
     ;;
 esac
 auth_token=$1
 target_uri=$2
 
 #Checkpoint
-sudo -u postgres psql -c 'checkpoint;'
+case "${volgroup_name}" in
+  pg)
+    sudo -u postgres psql -c 'checkpoint;'
+    ;;
+  #Mysql relies upon innodb commit flush.
+esac
 
 #Snapshot
 lvcreate --snapshot \
