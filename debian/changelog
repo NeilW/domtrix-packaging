@@ -1,3 +1,9 @@
+domtrix (0.0.36-0ubuntu1) xenial; urgency=medium
+
+  * Update cloudsql backup
+
+ -- Neil Wilson <neil@aldur.co.uk>  Wed, 22 Mar 2017 10:58:08 +0000
+
 domtrix (0.0.35-0ubuntu1) xenial; urgency=medium
 
   * Check haproxy config before reload
