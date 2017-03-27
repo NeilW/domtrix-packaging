@@ -63,7 +63,10 @@ lvcreate --snapshot \
 #Mount snapshot
 echo "Mounting ${target_partition} at ${mountdir}"
 mkdir -p "${mountdir}"
+echo "Recovering filesystem"
 mount -o rw,nouuid "${target_partition}" "${mountdir}"
+echo "Remounting read only for backup"
+mount -o remount,ro,nouuid "${target_partition}" "${mountdir}"
 
 #Backup snapshot
 echo "Backing up database to ${target_uri}"
