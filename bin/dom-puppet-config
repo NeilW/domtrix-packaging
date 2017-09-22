@@ -2,8 +2,10 @@
 set -e
 
 HIERA_FILE=/etc/brightbox/hiera/initial.yaml
-MYS_DEFAULT_VERSION=5.5
-PG_DEFAULT_VERSION=9.5
+PUPPET_GIT_CONFIG=/etc/puppet-git-receiver.conf
+puppet_receiver_branch_name='v2'
+MYS_DEFAULT_VERSION='5.5'
+PG_DEFAULT_VERSION='9.5'
 
 fail() {
   echo "$@" >&2
@@ -67,9 +69,16 @@ pg_service::version: ${db_version}
 END
 }
 
+generate_puppet_git_receiver_config() {
+  cat >"${PUPPET_GIT_CONFIG}" <<-CONF
+BRANCH=${puppet_receiver_branch_name}
+CONF
+}
+
 [ "$#" -ge 5 ] ||
   fail "Usage: $(basename $0) <service> <queue> <login> <password> <hosts> [<version>]"
 [ "$#" -le 6 ] ||
   fail "Usage: $(basename $0) <service> <queue> <login> <password> <hosts> [<version>]"
 
+generate_puppet_git_receiver_config
 generate_hiera_config "$@"
