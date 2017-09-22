@@ -1,3 +1,9 @@
+domtrix (0.0.39-0ubuntu1) xenial; urgency=medium
+
+  * Make puppet-git-receiver use the v2 branch
+
+ -- Neil Wilson <neil@aldur.co.uk>  Fri, 22 Sep 2017 11:21:00 +0100
+
 domtrix (0.0.38-0ubuntu1) xenial; urgency=medium
 
   * Remount snapshot readonly
