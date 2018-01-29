@@ -1,3 +1,9 @@
+domtrix (0.0.40-0ubuntu1) xenial; urgency=medium
+
+  * Fix Syslog format error
+
+ -- Neil Wilson <neil@aldur.co.uk>  Mon, 29 Jan 2018 11:47:48 +0000
+
 domtrix (0.0.39-0ubuntu1) xenial; urgency=medium
 
   * Make puppet-git-receiver use the v2 branch
